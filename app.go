@@ -7,9 +7,15 @@ import (
 	"os"
 )
 
-type ToDos struct {
-	List []string `json:"todolist"`
+type ToDoList struct {
+	List []ToDo `json:"todolist"`
 }
+
+type ToDo struct {
+	Task string `json:"task"`
+	Status string `json:"status"`
+}
+
 
 func print(l ...string) {
 	for _, x := range l {
@@ -17,13 +23,24 @@ func print(l ...string) {
 	}
 }
 
-func (td ToDos) toJson() []byte {
-	data, err := json.Marshal(td)
+
+func (td ToDoList) getList() []string {
+	var list []string
+    for _, item := range td.List {
+        list = append(list, item.Task)
+    }
+    return list
+}
+
+
+func toJson(v any) []byte {
+	data, err := json.Marshal(v)
 	if err != nil {
 		log.Fatal(err)
 	}
 	return data
 }
+
 
 func writeToFile(fname string, data []byte) error {
 
@@ -70,8 +87,8 @@ func readFile(fname string) ([]byte, error) {
 
 }
 
-func readToDoJson(fname string) ToDos {
-	var result ToDos
+func readToDoJson(fname string) ToDoList {
+	var result ToDoList
 
 	data, err := readFile(fname)
 	if err != nil {
@@ -88,28 +105,30 @@ func readToDoJson(fname string) ToDos {
 
 func main() {
 
-	tasks := ToDos{
-		List: []string{
-			"Buy groceries",
-			"Write blog post",
-			"Clean the house",
-			"Pay bills",
-			"Read a book",
-			"Prepare presentation",
-			"Exercise",
-			"Call parents",
-			"Plan vacation",
-			"Learn Go",
-		}}
+	items := []ToDo{
+		{"Buy groceries", "Pending"},
+		{"Write blog post", "In Progress"},
+		{"Clean the house", "Completed"},
+		{"Pay bills", "Pending"},
+		{"Read a book", "Completed"},
+		{"Prepare presentation", "In Progress"},
+		{"Exercise", "Pending"},
+		{"Call parents", "Completed"},
+		{"Plan vacation", "Pending"},
+		{"Learn Go", "In Progress"},
+	}
 
-	print(tasks.List...)
+	
+	tasks := ToDoList{List: items}
 
-	data := tasks.toJson()
+	print(tasks.getList()...)
+
+	data := toJson(tasks)
 	fmt.Println(string(data))
 
-	writeToFile("testj.json", tasks.toJson())
+	writeToFile("testj.json", toJson(tasks))
 
-	result := readToDoJson("todos.json")
+	result := readToDoJson("testj.json")
 	fmt.Printf("%#v\n", result)
 
 }

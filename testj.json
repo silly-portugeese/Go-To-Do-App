@@ -1,14 +1,44 @@
 {
     "todolist": [
-        "Buy groceries",
-        "Write blog post",
-        "Clean the house",
-        "Pay bills",
-        "Read a book",
-        "Prepare presentation",
-        "Exercise",
-        "Call parents",
-        "Plan vacation",
-        "Learn Go"
+        {
+            "task": "Buy groceries",
+            "status": "Pending"
+        },
+        {
+            "task": "Write blog post",
+            "status": "In Progress"
+        },
+        {
+            "task": "Clean the house",
+            "status": "Completed"
+        },
+        {
+            "task": "Pay bills",
+            "status": "Pending"
+        },
+        {
+            "task": "Read a book",
+            "status": "Completed"
+        },
+        {
+            "task": "Prepare presentation",
+            "status": "In Progress"
+        },
+        {
+            "task": "Exercise",
+            "status": "Pending"
+        },
+        {
+            "task": "Call parents",
+            "status": "Completed"
+        },
+        {
+            "task": "Plan vacation",
+            "status": "Pending"
+        },
+        {
+            "task": "Learn Go",
+            "status": "In Progress"
+        }
     ]
 }
