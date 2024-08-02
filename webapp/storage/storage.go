@@ -7,10 +7,10 @@ import (
 )
 
 type IToDoRepository interface {
-	FindAll() ([]models.ToDo, error)
+	FindAll() ([]models.ToDo)
 	FindById(int) (models.ToDo, error)
-	Create(task string, status *models.Status) models.ToDo
-	Update(int, task string, status *models.Status) (models.ToDo, error)
+	Create(string, models.Status) models.ToDo
+	Update(int, string, models.Status) (models.ToDo, error)
 	Delete(int) error
 }
 
