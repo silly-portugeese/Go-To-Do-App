@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 )
 
 type ToDoList struct {
@@ -16,18 +17,25 @@ type ToDo struct {
 	Status string `json:"status"`
 }
 
-
-func print(l ...string) {
+func print(l []string) {
 	for _, x := range l {
 		fmt.Println(x)
 	}
 }
 
 
-func (td ToDoList) getList() []string {
+func (td ToDoList) getTasks() []string {
 	var list []string
     for _, item := range td.List {
         list = append(list, item.Task)
+    }
+    return list
+}
+
+func (td ToDoList) getStatuses() []string {
+	var list []string
+    for _, item := range td.List {
+        list = append(list, item.Status)
     }
     return list
 }
@@ -121,7 +129,7 @@ func main() {
 	
 	tasks := ToDoList{List: items}
 
-	print(tasks.getList()...)
+	print(tasks.getTasks())
 
 	data := toJson(tasks)
 	fmt.Println(string(data))
@@ -131,5 +139,39 @@ func main() {
 	result := readToDoJson("testj.json")
 	fmt.Printf("%#v\n", result)
 
+	// Print tasks and statuses concurrently
+	taskCh := make(chan bool)
+	statusCh := make(chan bool)
+	
+	var wg sync.WaitGroup
+
+	wg.Add(2)
+	
+	go printTask(tasks.getTasks(), taskCh, statusCh, &wg)
+	go printStatus(tasks.getStatuses(), taskCh, statusCh, &wg)
+
+	wg.Wait()
+	close(statusCh)
+	close(taskCh)
+
+}
+
+func printTask(sl []string, ch1, ch2 chan bool, wg *sync.WaitGroup) {
+	defer wg.Done()
+	
+	for _,s := range sl {
+		fmt.Print("Task: ", s)
+		ch2 <- true
+		<-ch1 // wait for status to be printed
+	}
+}
+
+func printStatus(sl []string, ch1, ch2 chan bool, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for _,s := range sl {
+		<-ch2  // wait for the task to be printed
+		fmt.Println("; Status:", s)
+		ch1 <- true
+	}
 }
 
