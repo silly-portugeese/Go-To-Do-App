@@ -3,7 +3,7 @@ package storage
 import (
 	"errors"
 	"slices"
-	"todo-webapp/models"
+	"todo-webapp/backend/models"
 )
 
 type IToDoRepository interface {

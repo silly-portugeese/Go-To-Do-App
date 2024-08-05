@@ -2,10 +2,9 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"strings"
-	"todo-webapp/models"
-	"todo-webapp/storage"
+	"todo-webapp/backend/models"
+	"todo-webapp/backend/storage"
 )
 
 type Service struct {

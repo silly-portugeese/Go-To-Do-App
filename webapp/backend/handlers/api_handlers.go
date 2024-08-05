@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-
+	"log"
 	"net/http"
 	"strconv"
-	"todo-webapp/models"
-	"todo-webapp/service"
+	"todo-webapp/backend/models"
+	"todo-webapp/backend/service"
 )
 
 type ToDoList struct {
@@ -32,7 +32,11 @@ type updateParams struct {
 
 func jsonResponse(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(data)
+	// json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, "Failed to encode data", http.StatusInternalServerError)
+		log.Printf("Failed to encode data: %v", err)
+	}
 }
 
 func getPathId(r *http.Request) (int, error) {
@@ -120,41 +124,6 @@ func (h APIHandlers) UpdateToDoHandler(writer http.ResponseWriter, request *http
 		return
 	}
 	jsonResponse(writer, item)
-
-	// if status != "" && task != ""  {
-
-	// }
-
-	// var status *models.Status
-	// if options.Status != "" {
-	// 	status, err = h.Service.StringToStatus(options.Status)
-
-	// 	if err != nil {
-	// 		writer.WriteHeader(http.StatusBadRequest)
-	// 		return
-	// 	}
-	// }
-
-	// var item models.ToDo
-	// if status != "" &&  options.Task != ""  {
-	// 	item, err = h.Service.UpdateItem(id, &options.Task, status)
-	// 	if err != nil {
-	// 		writer.WriteHeader(http.StatusBadRequest)
-	// 	}
-	// 	jsonResponse(writer, item)
-	// } else if status != "" {
-	// 	item, err := h.Service.UpdateItem(id, nil, status)
-	// 	if err != nil {
-	// 		writer.WriteHeader(http.StatusBadRequest)
-	// 	}
-	// 	jsonResponse(writer, item)
-	// } else {
-	// 	item, err := h.Service.UpdateItem(id, &options.Task, nil)
-	// 	if err != nil {
-	// 		writer.WriteHeader(http.StatusBadRequest)
-	// 	}
-	// 	jsonResponse(writer, item)
-	// }
 
 }
 
