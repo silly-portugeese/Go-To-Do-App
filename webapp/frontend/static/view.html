@@ -1,0 +1,176 @@
+<!-- <h1>To Do List</h1>
+
+<div>
+    {{.Count}} To Dos -->
+<!-- <a href="/new">
+        Add a To Do
+    </a> -->
+<!-- </div>
+
+<div>
+    {{range .Items}}
+        <p>{{.Task}} -> {{.Status}}</p>
+    {{end}}
+</div> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <base href="/">
+    <!-- <link rel="stylesheet" type="text/css" href="/static/styles.css"> -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+
+        .todo-form {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 7px;
+        }
+
+        .todo-form input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .todo-form input[type="submit"] {
+            width: 18%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #2baf2b;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+
+        .todo-form input[type="submit"]:hover {
+            background-color: #248f24;
+        }
+
+
+        .todo-list {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .todo-list li {
+            background-color: #fff;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .todo-list li .task {
+            width: 50%;
+        }
+
+        .todo-list li .status {
+            width: 5.5em;
+            text-align: center;
+            color: white;
+        }
+
+        .todo-list li .task,
+        .todo-list li .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+
+        .todo-list li button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .todo-list li button:hover {
+            background-color: #c82333;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .todo-list li {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .todo-list li .status {
+                text-align: start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>To-Do List</h1>
+
+        <form class="todo-form" action="/add" method="POST">
+            <input type="text" name="task" placeholder="Add a new task..." required>
+            <input type="submit" value="Add Task">
+        </form>
+
+        <ul class="todo-list">
+            {{range .Items}}
+            <li>
+                <div class="task">{{.Task}}</div>
+
+                {{ if and (eq .Status "Pending") }}
+                <div class="status" style="background-color: #f0ac00;">{{.Status}}</div>
+                {{ end }}
+
+                {{ if and (eq .Status "In Progress") }}
+                <div class="status" style="background-color:  #1976D2;">{{.Status}}</div>
+                {{ end }}
+
+                {{ if and (eq .Status "Completed") }}
+                <div class="status" style="background-color: #388E3C;">{{.Status}}</div>
+                {{ end }}
+
+                <form action="/delete" method="POST">
+                    <input type="hidden" name="task" value="{{.Id}}">
+                    <button type="submit">Delete</button>
+                </form>
+            </li>
+            {{else}}
+            <li>No tasks yet!</li>
+            {{end}}
+        </ul>
+    </div>
+</body>
+
+</html>
