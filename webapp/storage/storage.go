@@ -7,10 +7,10 @@ import (
 )
 
 type IToDoRepository interface {
-	FindAll() ([]models.ToDo)
+	FindAll() []models.ToDo
 	FindById(int) (models.ToDo, error)
 	Create(string, models.Status) models.ToDo
-	Update(int, string, models.Status) (models.ToDo, error)
+	Update(int, *string, *models.Status) (models.ToDo, error)
 	Delete(int) error
 }
 
@@ -21,7 +21,22 @@ type ToDoStoreImpl struct {
 }
 
 func NewInMemoryStore() ToDoStoreImpl {
-	return ToDoStoreImpl{items: []models.ToDo{}, nextId: 1}
+
+	list := []models.ToDo{
+		{Id: 1, Task: "Buy groceries", Status: "Pending"},
+		{Id: 2, Task: "Write blog post", Status: "In Progress"},
+		{Id: 3, Task: "Clean the house", Status: "Completed"},
+		{Id: 4, Task: "Pay bills", Status: "Pending"},
+		{Id: 5, Task: "Read a book", Status: "Completed"},
+		{Id: 6, Task: "Prepare presentation", Status: "In Progress"},
+		{Id: 7, Task: "Exercise", Status: "Pending"},
+		{Id: 8, Task: "Call parents", Status: "Completed"},
+		{Id: 9, Task: "Plan vacation", Status: "Pending"},
+		{Id: 10, Task: "Learn Go", Status: "In Progress"},
+	}
+	return ToDoStoreImpl{items: list, nextId: len(list) + 1}
+
+	// return ToDoStoreImpl{items: []models.ToDo{}, nextId: 1}
 }
 
 func (tds *ToDoStoreImpl) FindAll() []models.ToDo {
@@ -43,7 +58,7 @@ func (tds *ToDoStoreImpl) Create(task string, status models.Status) models.ToDo 
 	return item
 }
 
-func (tds *ToDoStoreImpl) Update(id int, task string, status models.Status) (models.ToDo, error) {
+func (tds *ToDoStoreImpl) Update(id int, task *string, status *models.Status) (models.ToDo, error) {
 
 	index := tds.getItemIndex(id)
 
@@ -51,8 +66,14 @@ func (tds *ToDoStoreImpl) Update(id int, task string, status models.Status) (mod
 		return models.ToDo{}, errors.New("to do item not found")
 	}
 
-	tds.items[index].Task = task
-	tds.items[index].Status = status
+	// simulate optional parameters by using pointers.
+	if task != nil {
+		tds.items[index].Task = *task
+	}
+
+	if status != nil {
+		tds.items[index].Status = *status
+	}
 
 	return tds.items[index], nil
 
