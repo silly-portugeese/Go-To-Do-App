@@ -29,34 +29,6 @@ func errorCheck(err error) {
 	}
 }
 
-// func write(writer http.ResponseWriter, msg string) {
-// 	_, err := writer.Write([]byte(msg))
-// 	errorCheck(err)
-// }
-
-// requestURL := fmt.Sprintf("http://localhost:%d", serverPort)
-// req, err := http.NewRequest(http.MethodGet, requestURL, nil)
-// if err != nil {
-// 	fmt.Printf("client: could not create request: %s\n", err)
-// 	os.Exit(1)
-// }
-
-// res, err := http.DefaultClient.Do(req)
-// if err != nil {
-// 	fmt.Printf("client: error making http request: %s\n", err)
-// 	os.Exit(1)
-// }
-
-// fmt.Printf("client: got response!\n")
-// fmt.Printf("client: status code: %d\n", res.StatusCode)
-
-// resBody, err := ioutil.ReadAll(res.Body)
-// if err != nil {
-// 	fmt.Printf("client: could not read response body: %s\n", err)
-// 	os.Exit(1)
-// }
-// fmt.Printf("client: response body: %s\n", resBody)
-
 func (h *HTMLHandlers) InteractHandler(writer http.ResponseWriter, request *http.Request) {
 	requestURL := fmt.Sprintf("%s/api/todos", h.Host)
 
@@ -72,21 +44,21 @@ func (h *HTMLHandlers) InteractHandler(writer http.ResponseWriter, request *http
 
 	// Check if the response status is OK.
 	if resp.StatusCode != http.StatusOK {
-        http.Error(writer, "Failed to fetch data", http.StatusInternalServerError)
-        return
-    }
+		http.Error(writer, "Failed to fetch data", http.StatusInternalServerError)
+		return
+	}
 
-    // Parse the JSON response.
-    var data ToDoList
-    if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-        http.Error(writer, "Failed to parse data", http.StatusInternalServerError)
-        return
-    }
+	// Parse the JSON response.
+	var data ToDoList
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+		http.Error(writer, "Failed to parse data", http.StatusInternalServerError)
+		return
+	}
 
 	tmpl, err := template.ParseFiles("static/view.html")
 	errorCheck(err)
 
- 	err = tmpl.Execute(writer, data)
+	err = tmpl.Execute(writer, data)
 	// errorCheck(err)
 	if err != nil {
 		// Handle the error if any and return
@@ -94,6 +66,31 @@ func (h *HTMLHandlers) InteractHandler(writer http.ResponseWriter, request *http
 		return
 	}
 
+}
+
+func (h *HTMLHandlers) DeleteHandler(writer http.ResponseWriter, request *http.Request) {
+
+	id := request.PathValue("id")
+	requestURL := fmt.Sprintf("%s/api/todo/delete/%s", h.Host, id)
+
+	// Create the DELETE request
+	req, err := http.NewRequest("DELETE", requestURL, nil)
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return
+	}
+
+	// Optionally, set headers if required by the API
+	// req.Header.Set("Accept", "application/json")
+
+	// Send the request using http.Client
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error making request:", err)
+		return
+	}
+	defer resp.Body.Close()
 }
 
 // func newHandler(writer http.ResponseWriter, request *http.Request) {
@@ -108,18 +105,4 @@ func (h *HTMLHandlers) InteractHandler(writer http.ResponseWriter, request *http
 // 	tdl = append(tdl, td)
 
 // 	http.Redirect(writer, request, "/interact", http.StatusFound)
-// }
-
-// func main() {
-// 	http.HandleFunc("/interact", interactHandler)
-// 	http.HandleFunc("/new", newHandler)
-// 	http.HandleFunc("/create", createHandler)
-
-// 	// http.HandleFunc("/update/{id}", updateHandler)
-// 	// http.HandleFunc("/delete/{id}", deleteHandler)
-// 	// http.HandleFunc("/create", createHandler)
-
-// 	err := http.ListenAndServe("localhost:8080", nil)
-// 	log.Fatal(err)
-
 // }

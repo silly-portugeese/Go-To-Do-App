@@ -27,8 +27,8 @@ func main() {
 	// fs := http.FileServer(http.Dir("./static"))
 	// http.Handle("/", fs)
 
-	mux.HandleFunc("GET /", htmlHandlers.InteractHandler)
-
+	mux.HandleFunc("GET /todos", htmlHandlers.InteractHandler)
+	mux.HandleFunc("DELETE /todo/delete/{id}", htmlHandlers.DeleteHandler)
 
 	http.ListenAndServe(":8002", mux)
 	

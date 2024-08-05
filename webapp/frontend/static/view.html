@@ -20,7 +20,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List</title>
-    <base href="/">
+    <script src="https://unpkg.com/htmx.org@2.0.1"></script>
+    <!-- <base href="/"> -->
     <!-- <link rel="stylesheet" type="text/css" href="/static/styles.css"> -->
     <style>
         body {
@@ -146,7 +147,7 @@
 
         <ul class="todo-list">
             {{range .Items}}
-            <li>
+            <li id="todo-item-{{ .Id }}">
                 <div class="task">{{.Task}}</div>
 
                 {{ if and (eq .Status "Pending") }}
@@ -161,10 +162,9 @@
                 <div class="status" style="background-color: #388E3C;">{{.Status}}</div>
                 {{ end }}
 
-                <form action="/delete" method="POST">
-                    <input type="hidden" name="task" value="{{.Id}}">
-                    <button type="submit">Delete</button>
-                </form>
+                     
+                <button hx-delete="/todo/delete/{{ .Id }}" hx-target="#todo-item-{{ .Id }}" hx-swap="outerHTML">Delete</button>
+                
             </li>
             {{else}}
             <li>No tasks yet!</li>
