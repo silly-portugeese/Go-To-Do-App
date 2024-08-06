@@ -153,8 +153,7 @@
                     <button hx-delete="/todo/delete/{{ .Id }}" hx-target="#todo-item-{{ .Id }}" hx-swap="outerHTML">❌</button>
                 </div>
             </li>
-            {{else}}
-            <li>No tasks yet!</li>
+           
             {{end}}
         </ul>
     </div>
