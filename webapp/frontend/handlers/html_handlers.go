@@ -69,6 +69,89 @@ func (h *HTMLHandlers) InteractHandler(writer http.ResponseWriter, request *http
 
 }
 
+
+func (h *HTMLHandlers) EditHandler(writer http.ResponseWriter, request *http.Request) {
+
+	id := request.PathValue("id")
+	requestURL := fmt.Sprintf("%s/api/todo/%s", h.Host, id)
+
+	resp, err := http.Get(requestURL)
+
+	if err != nil {
+		log.Fatalln(err)
+		// fmt.Printf("client: could not create request: %s\n", err)
+		// os.Exit(1)
+	}
+
+	defer resp.Body.Close()
+
+	// Check if the response status is OK.
+	if resp.StatusCode != http.StatusOK {
+		http.Error(writer, "Failed to fetch data", http.StatusInternalServerError)
+		return
+	}
+
+	// Parse the JSON response.
+	var data ToDo
+	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
+		http.Error(writer, "Failed to parse data", http.StatusInternalServerError)
+		return
+	}
+
+	tmpl, err := template.ParseFiles("static/edit.html")
+	errorCheck(err)
+
+	err = tmpl.Execute(writer, data)
+	// errorCheck(err)
+	if err != nil {
+		// Handle the error if any and return
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+}
+
+
+
+func (h *HTMLHandlers) UpdateHandler(writer http.ResponseWriter, request *http.Request) {
+
+	id := request.PathValue("id")
+	requestURL := fmt.Sprintf("%s/api/todo/update/%s", h.Host, id)
+
+	task := request.FormValue("task")
+	status := request.FormValue("status")
+	data := map[string]string{"task": task, "status": status}
+
+	// Marshal the payload into JSON
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("Error marshalling JSON:", err)
+		return
+	}
+
+	// Create the PUT request
+	req, err := http.NewRequest("PUT", requestURL, bytes.NewBuffer(jsonData))
+	if err != nil {
+		fmt.Println("Error editing request:", err)
+		return
+	}
+
+	// Optionally, set headers if required by the API
+	// req.Header.Set("Accept", "application/json")
+
+	// Send the request using http.Client
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error making request:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	http.Redirect(writer, request, "/todos", http.StatusFound)
+}
+
+
 func (h *HTMLHandlers) CreateHandler(writer http.ResponseWriter, request *http.Request) {
 	
 	requestURL := fmt.Sprintf("%s/api/todo/create", h.Host)
@@ -161,9 +244,3 @@ func (h *HTMLHandlers) DeleteHandler(writer http.ResponseWriter, request *http.R
 	}
 	defer resp.Body.Close()
 }
-
-// func newHandler(writer http.ResponseWriter, request *http.Request) {
-// 	tmpl, err := template.ParseFiles("new.html")
-// 	errorCheck(err)
-// 	err = tmpl.Execute(writer, nil)
-// }

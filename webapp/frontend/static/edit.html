@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do: {{ .Task }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+
+        .todo-form {
+            margin-bottom: 20px;
+        }
+
+        .todo-form div, .todo-form fieldset {
+            margin: 15px 0;
+        }
+
+        .todo-form .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+
+        .todo-form input[type="text"] {
+            padding: 10px;
+            border: 1px solid #fff;
+            border-radius: 4px;
+            flex-grow: 1
+        }
+
+        .todo-form input[type="submit"] {
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #2baf2b;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+
+        .todo-form input[type="submit"]:hover {
+            background-color: #248f24;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Edit To-Do</h1>
+        <form action="/todo/update/{{ .Id }}" method="POST" class="todo-form">
+
+            <div class="form-group">
+                <label for="task">Task:</label>
+                <input type="text" name="task" placeholder="Edit the task..." value="{{ .Task }}">
+            </div>
+
+            <fieldset class="radio-group">
+                <legend>Status:</legend>
+                <div>
+                    <input type="radio" id="pending" name="status" value="pending" checked />
+                    <label for="pending">Pending</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="in_progress" name="status" value="in progress" />
+                    <label for="in_progress">In Progress</label>
+                </div>
+
+                <div>
+                    <input type="radio" id="completed" name="status" value="completed" />
+                    <label for="completed">Completed</label>
+                </div>
+            </fieldset>
+            <input type="submit" value="Save">
+
+        </form>
+
+    </div>
+</body>
+
+</html>

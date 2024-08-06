@@ -28,8 +28,9 @@ func main() {
 	// http.Handle("/", fs)
 
 	mux.HandleFunc("GET /todos", htmlHandlers.InteractHandler)
-	mux.HandleFunc("/todo/create", htmlHandlers.CreateHandler)
-	// http.HandleFunc("POST /todo/update/{id}", htmlHandlers.UpdateHandler)
+	mux.HandleFunc("POST /todo/create", htmlHandlers.CreateHandler)
+	mux.HandleFunc("GET /todo/edit/{id}", htmlHandlers.EditHandler)
+	mux.HandleFunc("POST /todo/update/{id}", htmlHandlers.UpdateHandler)
 	mux.HandleFunc("DELETE /todo/delete/{id}", htmlHandlers.DeleteHandler)
 
 	http.ListenAndServe(":8002", mux)
