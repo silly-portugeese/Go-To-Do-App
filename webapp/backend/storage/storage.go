@@ -3,6 +3,7 @@ package storage
 import (
 	"errors"
 	"slices"
+	"sync"
 	"todo-webapp/backend/models"
 )
 
@@ -16,6 +17,7 @@ type IToDoRepository interface {
 
 // Implementation
 type ToDoStoreImpl struct {
+	mu sync.Mutex
 	items  []models.ToDo
 	nextId int
 }
@@ -39,6 +41,10 @@ func NewInMemoryStore() ToDoStoreImpl {
 	// return ToDoStoreImpl{items: []models.ToDo{}, nextId: 1}
 }
 
+func NewEmptyInMemoryStore() ToDoStoreImpl {
+	return ToDoStoreImpl{items: []models.ToDo{}, nextId: 1}
+}
+
 func (tds *ToDoStoreImpl) FindAll() []models.ToDo {
 	return tds.items
 }
@@ -52,6 +58,9 @@ func (tds *ToDoStoreImpl) FindById(id int) (models.ToDo, error) {
 }
 
 func (tds *ToDoStoreImpl) Create(task string, status models.Status) models.ToDo {
+	tds.mu.Lock()
+	defer tds.mu.Unlock()
+	
 	item := models.ToDo{Id: tds.nextId, Task: task, Status: status}
 	tds.items = append(tds.items, item)
 	tds.nextId += 1
@@ -59,6 +68,8 @@ func (tds *ToDoStoreImpl) Create(task string, status models.Status) models.ToDo 
 }
 
 func (tds *ToDoStoreImpl) Update(id int, task *string, status *models.Status) (models.ToDo, error) {
+	tds.mu.Lock()
+	defer tds.mu.Unlock()
 
 	index := tds.getItemIndex(id)
 
@@ -80,6 +91,9 @@ func (tds *ToDoStoreImpl) Update(id int, task *string, status *models.Status) (m
 }
 
 func (tds *ToDoStoreImpl) Delete(id int) error {
+	tds.mu.Lock()
+	defer tds.mu.Unlock()
+
 	index := tds.getItemIndex(id)
 
 	if index < 0 {

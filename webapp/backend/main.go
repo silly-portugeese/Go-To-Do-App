@@ -9,7 +9,9 @@ import (
 
 func main() {
 
-	store := storage.NewInMemoryStore()
+	// store := storage.NewInMemoryStore()
+	store := storage.NewEmptyInMemoryStore()
+
 	service := service.NewService(&store)
 
 	// Initialize API handlers

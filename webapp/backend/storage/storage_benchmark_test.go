@@ -5,6 +5,11 @@ import (
 	"testing"
 )
 
+// https://medium.com/nerd-for-tech/benchmarking-your-solution-in-go-940b528416c
+// go test -bench=.
+// go test -bench=BenchmarkTestToDoStoreImpl_FindAll
+// go test -bench=. -benchtime=20s
+
 func BenchmarkTestToDoStoreImpl_FindAll(b *testing.B) {
     store := NewInMemoryStore()
     
@@ -29,8 +34,6 @@ func BenchmarkTestToDoStoreImpl_Create(b *testing.B) {
 		task := "Task " + strconv.Itoa(i)
         store.Create(task,"Pending")
     }
-
-	// fmt.Println(store.FindAll())
 }
 
 
@@ -38,7 +41,6 @@ func BenchmarkTestToDoStoreImpl_Update(b *testing.B) {
 	store := NewInMemoryStore()
     id := 10
 	task := "Do Something"
-
 
     for i := 0; i < b.N; i++ {
        _, _ = store.Update(id, &task, nil)

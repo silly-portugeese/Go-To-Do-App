@@ -1,13 +1,18 @@
 package storage
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 	"todo-webapp/backend/models"
 )
 
 // File generated using option "Go: generate unit tests for function"
+
+// if your working directory is that of your package, to test all of the files you could run:
+// go test ./...
+
+// if you wanted to get test coverage, you could run:
+// go test ./... -cover
 
 var todoSlice []models.ToDo
 
@@ -139,7 +144,7 @@ func TestToDoStoreImpl_Create(t *testing.T) {
 		},
 	}
 
-	fmt.Println(todoSlice)
+	// fmt.Println(todoSlice)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -156,10 +161,9 @@ func TestToDoStoreImpl_Create(t *testing.T) {
 
 func TestToDoStoreImpl_Update(t *testing.T) {
 
-
 	Init()
 	task := "Clean the floor"
-    status := models.IN_PROGRESS
+	status := models.IN_PROGRESS
 
 	type fields struct {
 		items  []models.ToDo
@@ -187,7 +191,7 @@ func TestToDoStoreImpl_Update(t *testing.T) {
 		{
 			name:    "Unsuccessful update: not enough paramenters",
 			fields:  fields{items: todoSlice, nextId: len(todoSlice) + 1},
-			args:    args{id: 4, task:nil, status: nil},
+			args:    args{id: 4, task: nil, status: nil},
 			want:    models.ToDo{Id: 4, Task: "Pay bills", Status: models.PENDING},
 			wantErr: false,
 		},
