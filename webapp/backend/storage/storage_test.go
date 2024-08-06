@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
-	"todo-webapp/models"
+	"todo-webapp/backend/models"
 )
 
 // File generated using option "Go: generate unit tests for function"
@@ -156,7 +156,10 @@ func TestToDoStoreImpl_Create(t *testing.T) {
 
 func TestToDoStoreImpl_Update(t *testing.T) {
 
+
 	Init()
+	task := "Clean the floor"
+    status := models.IN_PROGRESS
 
 	type fields struct {
 		items  []models.ToDo
@@ -164,8 +167,8 @@ func TestToDoStoreImpl_Update(t *testing.T) {
 	}
 	type args struct {
 		id     int
-		task   string
-		status models.Status
+		task   *string
+		status *models.Status
 	}
 	tests := []struct {
 		name    string
@@ -175,18 +178,25 @@ func TestToDoStoreImpl_Update(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "Successful update of item",
+			name:    "Unsuccessful update: item not found",
+			fields:  fields{items: []models.ToDo{}, nextId: 1},
+			args:    args{id: 3, task: &task, status: &status},
+			want:    models.ToDo{},
+			wantErr: true,
+		},
+		{
+			name:    "Unsuccessful update: not enough paramenters",
 			fields:  fields{items: todoSlice, nextId: len(todoSlice) + 1},
-			args:    args{id: 3, task: "Clean the floor", status: models.IN_PROGRESS},
-			want:    models.ToDo{Id: 3, Task: "Clean the floor", Status: models.IN_PROGRESS},
+			args:    args{id: 4, task:nil, status: nil},
+			want:    models.ToDo{Id: 4, Task: "Pay bills", Status: models.PENDING},
 			wantErr: false,
 		},
 		{
-			name:    "Unsuccessful update: item not found",
-			fields:  fields{items: []models.ToDo{}, nextId: 1},
-			args:    args{id: 3, task: "Clean the floor", status: models.IN_PROGRESS},
-			want:    models.ToDo{},
-			wantErr: true,
+			name:    "Successful update of item",
+			fields:  fields{items: todoSlice, nextId: len(todoSlice) + 1},
+			args:    args{id: 3, task: &task, status: &status},
+			want:    models.ToDo{Id: 3, Task: "Clean the floor", Status: models.IN_PROGRESS},
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
@@ -196,7 +206,6 @@ func TestToDoStoreImpl_Update(t *testing.T) {
 				nextId: tt.fields.nextId,
 			}
 			got, err := tds.Update(tt.args.id, tt.args.task, tt.args.status)
-			fmt.Println(got)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ToDoStoreImpl.Update() error = %v, wantErr %v", err, tt.wantErr)
 				return
