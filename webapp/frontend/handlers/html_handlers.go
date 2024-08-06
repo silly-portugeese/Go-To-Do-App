@@ -122,7 +122,10 @@ func (h *HTMLHandlers) CreateHandler(writer http.ResponseWriter, request *http.R
 		<li id="todo-item-{{ .Id }}" class="tod0-item">
 		<div class="task">{{.Task}}</div>
 		<div class="status" style="background-color: #f0ac00;">{{.Status}}</div>
-		<button hx-delete="/todo/delete/{{ .Id }}" hx-target="#todo-item-{{ .Id }}" hx-swap="outerHTML">Delete</button>   
+		<div>
+			<a href="/todo/edit/{{ .Id }}">✏️</a>
+			<button hx-delete="/todo/delete/{{ .Id }}" hx-target="#todo-item-{{ .Id }}" hx-swap="outerHTML">❌</button>
+		</div>  
 	</li>
 	`))
 	tmpl.Execute(writer, respData)
