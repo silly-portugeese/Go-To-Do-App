@@ -16,7 +16,7 @@ case "$1" in
     webapp-backend)
         echo "Running WebApp Backend..."
         cd ./webapp/backend
-        go run .main.go
+        go run ./main.go
         cd -  # Return to the original directory
         ;;
     webapp-frontend)
