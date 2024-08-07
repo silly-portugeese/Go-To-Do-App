@@ -31,10 +31,11 @@ func Init() {
 	}
 }
 
-func TestToDoStoreImpl_FindAll(t *testing.T) {
+func Test_toDoStoreImpl_FindAll(t *testing.T) {
 
 	Init()
 	type fields struct {
+		cmds   chan command
 		items  []models.ToDo
 		nextId int
 	}
@@ -52,21 +53,24 @@ func TestToDoStoreImpl_FindAll(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tds := &ToDoStoreImpl{
+			tds := &toDoStoreImpl{
+				cmds: make(chan command),
 				items:  tt.fields.items,
 				nextId: tt.fields.nextId,
 			}
+			go tds.launchRequestManager()
 			if got := tds.FindAll(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToDoStoreImpl.FindAll() = %v, want %v", got, tt.want)
+				t.Errorf("toDoStoreImpl.FindAll() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestToDoStoreImpl_FindById(t *testing.T) {
+func Test_toDoStoreImpl_FindById(t *testing.T) {
 
 	Init()
 	type fields struct {
+		cmds   chan command
 		items  []models.ToDo
 		nextId int
 	}
@@ -97,26 +101,30 @@ func TestToDoStoreImpl_FindById(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tds := &ToDoStoreImpl{
+			tds := &toDoStoreImpl{
+				cmds: make(chan command),
 				items:  tt.fields.items,
 				nextId: tt.fields.nextId,
 			}
+			go tds.launchRequestManager()
 			got, err := tds.FindById(tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ToDoStoreImpl.FindById() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("toDoStoreImpl.FindById() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToDoStoreImpl.FindById() = %v, want %v", got, tt.want)
+				t.Errorf("toDoStoreImpl.FindById() = %v, want %v", got, tt.want)
 			}
+			close(tds.cmds)
 		})
 	}
 }
 
-func TestToDoStoreImpl_Create(t *testing.T) {
+func Test_toDoStoreImpl_Create(t *testing.T) {
 
 	Init()
 	type fields struct {
+		cmds   chan command
 		items  []models.ToDo
 		nextId int
 	}
@@ -148,24 +156,28 @@ func TestToDoStoreImpl_Create(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tds := &ToDoStoreImpl{
+			tds := &toDoStoreImpl{
+				cmds: make(chan command),
 				items:  tt.fields.items,
 				nextId: tt.fields.nextId,
 			}
+			go tds.launchRequestManager()
 			if got := tds.Create(tt.args.task, tt.args.status); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToDoStoreImpl.Create() = %v, want %v", got, tt.want)
+				t.Errorf("toDoStoreImpl.Create() = %v, want %v", got, tt.want)
 			}
+			close(tds.cmds)
 		})
 	}
 }
 
-func TestToDoStoreImpl_Update(t *testing.T) {
+func Test_toDoStoreImpl_Update(t *testing.T) {
 
 	Init()
 	task := "Clean the floor"
 	status := models.IN_PROGRESS
 
 	type fields struct {
+		cmds   chan command
 		items  []models.ToDo
 		nextId int
 	}
@@ -205,27 +217,31 @@ func TestToDoStoreImpl_Update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tds := &ToDoStoreImpl{
+			tds := &toDoStoreImpl{
+				cmds: make(chan command),
 				items:  tt.fields.items,
 				nextId: tt.fields.nextId,
 			}
+			go tds.launchRequestManager()
 			got, err := tds.Update(tt.args.id, tt.args.task, tt.args.status)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ToDoStoreImpl.Update() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("toDoStoreImpl.Update() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ToDoStoreImpl.Update() = %v, want %v", got, tt.want)
+				t.Errorf("toDoStoreImpl.Update() = %v, want %v", got, tt.want)
 			}
+			close(tds.cmds)
 		})
 	}
 }
 
-func TestToDoStoreImpl_Delete(t *testing.T) {
+func Test_toDoStoreImpl_Delete(t *testing.T) {
 
 	Init()
 
 	type fields struct {
+		cmds   chan command
 		items  []models.ToDo
 		nextId int
 	}
@@ -253,12 +269,14 @@ func TestToDoStoreImpl_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tds := &ToDoStoreImpl{
+			tds := &toDoStoreImpl{
+				cmds: make(chan command),
 				items:  tt.fields.items,
 				nextId: tt.fields.nextId,
 			}
+			go tds.launchRequestManager()
 			if err := tds.Delete(tt.args.id); (err != nil) != tt.wantErr {
-				t.Errorf("ToDoStoreImpl.Delete() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("toDoStoreImpl.Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
