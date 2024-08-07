@@ -1,16 +1,16 @@
 package storage
 
 import (
- 	"strconv"
+	"strconv"
 	"testing"
 )
 
 // https://medium.com/nerd-for-tech/benchmarking-your-solution-in-go-940b528416c
 // go test -bench=.
-// go test -bench=BenchmarkTestToDoStoreImpl_FindAll
+// go test -bench=BenchmarkTest_todoStore_FindAll
 // go test -bench=. -benchtime=20s
 
-func BenchmarkTestToDoStoreImpl_FindAll(b *testing.B) {
+func BenchmarkTest_todoStore_FindAll(b *testing.B) {
     store := NewInMemoryStore()
     
     for i := 0; i < b.N; i++ {
@@ -18,7 +18,7 @@ func BenchmarkTestToDoStoreImpl_FindAll(b *testing.B) {
     }
 }
 
-func BenchmarkTestToDoStoreImpl_FindById(b *testing.B) {
+func BenchmarkTest_todoStore_FindById(b *testing.B) {
     store := NewInMemoryStore()
     id := 10
 
@@ -27,7 +27,7 @@ func BenchmarkTestToDoStoreImpl_FindById(b *testing.B) {
     }
 }
 
-func BenchmarkTestToDoStoreImpl_Create(b *testing.B) {
+func BenchmarkTest_todoStore_Create(b *testing.B) {
 	store := NewInMemoryStore()
 
     for i := 0; i < b.N; i++ {
@@ -37,7 +37,7 @@ func BenchmarkTestToDoStoreImpl_Create(b *testing.B) {
 }
 
 
-func BenchmarkTestToDoStoreImpl_Update(b *testing.B) {
+func BenchmarkTest_todoStore_Update(b *testing.B) {
 	store := NewInMemoryStore()
     id := 10
 	task := "Do Something"
@@ -48,7 +48,7 @@ func BenchmarkTestToDoStoreImpl_Update(b *testing.B) {
 }
 
 
-func BenchmarkTestToDoStoreImpl_Delete(b *testing.B) {
+func BenchmarkTest_todoStore_Delete(b *testing.B) {
 	store := NewInMemoryStore()
 	id := 9
     for i := 0; i < b.N; i++ {

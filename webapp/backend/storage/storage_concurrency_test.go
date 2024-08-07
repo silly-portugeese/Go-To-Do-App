@@ -7,7 +7,7 @@ import (
 )
 
 
-func TestConcurrentToDoStoreImpl_FindAll(t *testing.T) {
+func TestConcurrent_todoStore_FindAll(t *testing.T) {
 
 	// Start multiple goroutines to add items concurrently
 	var wg sync.WaitGroup
@@ -25,7 +25,7 @@ func TestConcurrentToDoStoreImpl_FindAll(t *testing.T) {
 	wg.Wait()
 }
 
-func TestConcurrentToDoStoreImpl_FindById(t *testing.T) {
+func TestConcurrent_todoStore_FindById(t *testing.T) {
 
 	// Start multiple goroutines to add items concurrently
 	var wg sync.WaitGroup
@@ -44,7 +44,7 @@ func TestConcurrentToDoStoreImpl_FindById(t *testing.T) {
 	wg.Wait()
 }
 
-func TestConcurrentToDoStoreImpl_Create(t *testing.T) {
+func TestConcurrent_todoStore_Create(t *testing.T) {
 
 	// Start multiple goroutines to add items concurrently
 	var wg sync.WaitGroup
@@ -73,7 +73,7 @@ func TestConcurrentToDoStoreImpl_Create(t *testing.T) {
 
 }
 
-func TestConcurrentToDoStoreImpl_Update(t *testing.T) {
+func TestConcurrent_todoStore_Update(t *testing.T) {
 
 	// Start multiple goroutines to add items concurrently
 	var wg sync.WaitGroup
@@ -94,7 +94,7 @@ func TestConcurrentToDoStoreImpl_Update(t *testing.T) {
 }
 
 
-func TestConcurrentToDoStoreImpl_Delete(t *testing.T) {
+func TestConcurrent_todoStore_Delete(t *testing.T) {
 
 	// Start multiple goroutines to add items concurrently
 	var wg sync.WaitGroup

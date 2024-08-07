@@ -21,7 +21,7 @@ type IToDoRepository interface {
 }
 
 // Implementation
-type toDoStoreImpl struct {
+type todoStore struct {
 	cmds   chan command
 	items  []models.ToDo
 	nextId int
@@ -39,7 +39,7 @@ type command struct {
 	reply  chan response
 }
 
-func NewInMemoryStore() toDoStoreImpl {
+func NewInMemoryStore() todoStore {
 
 	list := []models.ToDo{
 		{Id: 1, Task: "Buy groceries", Status: "Pending"},
@@ -54,19 +54,19 @@ func NewInMemoryStore() toDoStoreImpl {
 		{Id: 10, Task: "Learn Go", Status: "In Progress"},
 	}
 
-	store := toDoStoreImpl{items: list, nextId: len(list) + 1, cmds: make(chan command)}
+	store := todoStore{items: list, nextId: len(list) + 1, cmds: make(chan command)}
 	go store.launchRequestManager()
 	return store
 
 }
 
-func NewEmptyInMemoryStore() toDoStoreImpl {
-	store := toDoStoreImpl{items: []models.ToDo{}, nextId: 1, cmds: make(chan command)}
+func NewEmptyInMemoryStore() todoStore {
+	store := todoStore{items: []models.ToDo{}, nextId: 1, cmds: make(chan command)}
 	go store.launchRequestManager()
 	return store
 }
 
-func (tds *toDoStoreImpl) launchRequestManager() {
+func (tds *todoStore) launchRequestManager() {
 
 	executers := map[string]func(cmd command){
 		"create": tds.executeCreate,
@@ -89,11 +89,11 @@ func (tds *toDoStoreImpl) launchRequestManager() {
 // --- Internal Methods ---
 // These methods are used internally by the RequestManager to handle specific commands: create, read, update, delete, list
 
-func (tds *toDoStoreImpl) executeFindAll(cmd command) {
+func (tds *todoStore) executeFindAll(cmd command) {
 	cmd.reply <- response{items: tds.items}
 }
 
-func (tds *toDoStoreImpl) executeFindById(cmd command) {
+func (tds *todoStore) executeFindById(cmd command) {
 
 	id, hasId := cmd.args["id"].(int)
 
@@ -111,7 +111,7 @@ func (tds *toDoStoreImpl) executeFindById(cmd command) {
 	cmd.reply <- response{item: tds.items[index], err: nil}
 }
 
-func (tds *toDoStoreImpl) executeCreate(cmd command) {
+func (tds *todoStore) executeCreate(cmd command) {
 
 	task, hasTask := cmd.args["task"].(string)
 	status, hasStatus := cmd.args["status"].(models.Status)
@@ -127,7 +127,7 @@ func (tds *toDoStoreImpl) executeCreate(cmd command) {
 	cmd.reply <- response{item: item}
 }
 
-func (tds *toDoStoreImpl) executeUpdate(cmd command) {
+func (tds *todoStore) executeUpdate(cmd command) {
 
 	id, hasId := cmd.args["id"].(int)
 	task, _ := cmd.args["task"].(*string)
@@ -156,7 +156,7 @@ func (tds *toDoStoreImpl) executeUpdate(cmd command) {
 	cmd.reply <- response{item: tds.items[index], err: nil}
 }
 
-func (tds *toDoStoreImpl) executeDelete(cmd command) {
+func (tds *todoStore) executeDelete(cmd command) {
 
 	id, hasId := cmd.args["id"].(int)
 	if !hasId {
@@ -174,35 +174,35 @@ func (tds *toDoStoreImpl) executeDelete(cmd command) {
 	cmd.reply <- response{err: nil}
 }
 
-func (tds *toDoStoreImpl) getItemIndex(id int) int {
+func (tds *todoStore) getItemIndex(id int) int {
 	return slices.IndexFunc(tds.items, func(td models.ToDo) bool { return td.Id == id })
 }
 
 // --- Interface Methods ---
 // They are exposed to the rest of the application.
 
-func (tds *toDoStoreImpl) FindAll() []models.ToDo {
+func (tds *todoStore) FindAll() []models.ToDo {
 	ch := make(chan response)
 	tds.cmds <- command{action: "list", reply: ch}
 	response := <-ch
 	return response.items
 }
 
-func (tds *toDoStoreImpl) FindById(id int) (models.ToDo, error) {
+func (tds *todoStore) FindById(id int) (models.ToDo, error) {
 	ch := make(chan response)
 	tds.cmds <- command{action: "read", reply: ch, args: map[string]interface{}{"id": id}}
 	response := <-ch
 	return response.item, response.err
 }
 
-func (tds *toDoStoreImpl) Create(task string, status models.Status) models.ToDo {
+func (tds *todoStore) Create(task string, status models.Status) models.ToDo {
 	ch := make(chan response)
 	tds.cmds <- command{action: "create", reply: ch, args: map[string]interface{}{"task": task, "status": status}}
 	response := <-ch
 	return response.item
 }
 
-func (tds *toDoStoreImpl) Update(id int, task *string, status *models.Status) (models.ToDo, error) {
+func (tds *todoStore) Update(id int, task *string, status *models.Status) (models.ToDo, error) {
 	ch := make(chan response)
 	tds.cmds <- command{action: "update", reply: ch, args: map[string]interface{}{"id": id, "task": task, "status": status}}
 	response := <-ch
@@ -210,7 +210,7 @@ func (tds *toDoStoreImpl) Update(id int, task *string, status *models.Status) (m
 
 }
 
-func (tds *toDoStoreImpl) Delete(id int) error {
+func (tds *todoStore) Delete(id int) error {
 	ch := make(chan response)
 	tds.cmds <- command{action: "delete", reply: ch, args: map[string]interface{}{"id": id}}
 	response := <-ch

@@ -31,7 +31,7 @@ func Init() {
 	}
 }
 
-func Test_toDoStoreImpl_FindAll(t *testing.T) {
+func Test_todoStore_FindAll(t *testing.T) {
 
 	Init()
 	type fields struct {
@@ -53,20 +53,20 @@ func Test_toDoStoreImpl_FindAll(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tds := &toDoStoreImpl{
-				cmds: make(chan command),
+			tds := &todoStore{
+				cmds:   make(chan command),
 				items:  tt.fields.items,
 				nextId: tt.fields.nextId,
 			}
 			go tds.launchRequestManager()
 			if got := tds.FindAll(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("toDoStoreImpl.FindAll() = %v, want %v", got, tt.want)
+				t.Errorf("todoStore.FindAll() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_toDoStoreImpl_FindById(t *testing.T) {
+func Test_todoStore_FindById(t *testing.T) {
 
 	Init()
 	type fields struct {
@@ -101,26 +101,26 @@ func Test_toDoStoreImpl_FindById(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tds := &toDoStoreImpl{
-				cmds: make(chan command),
+			tds := &todoStore{
+				cmds:   make(chan command),
 				items:  tt.fields.items,
 				nextId: tt.fields.nextId,
 			}
 			go tds.launchRequestManager()
 			got, err := tds.FindById(tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("toDoStoreImpl.FindById() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("todoStore.FindById() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("toDoStoreImpl.FindById() = %v, want %v", got, tt.want)
+				t.Errorf("todoStore.FindById() = %v, want %v", got, tt.want)
 			}
 			close(tds.cmds)
 		})
 	}
 }
 
-func Test_toDoStoreImpl_Create(t *testing.T) {
+func Test_todoStore_Create(t *testing.T) {
 
 	Init()
 	type fields struct {
@@ -156,21 +156,21 @@ func Test_toDoStoreImpl_Create(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tds := &toDoStoreImpl{
-				cmds: make(chan command),
+			tds := &todoStore{
+				cmds:   make(chan command),
 				items:  tt.fields.items,
 				nextId: tt.fields.nextId,
 			}
 			go tds.launchRequestManager()
 			if got := tds.Create(tt.args.task, tt.args.status); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("toDoStoreImpl.Create() = %v, want %v", got, tt.want)
+				t.Errorf("todoStore.Create() = %v, want %v", got, tt.want)
 			}
 			close(tds.cmds)
 		})
 	}
 }
 
-func Test_toDoStoreImpl_Update(t *testing.T) {
+func Test_todoStore_Update(t *testing.T) {
 
 	Init()
 	task := "Clean the floor"
@@ -217,26 +217,26 @@ func Test_toDoStoreImpl_Update(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tds := &toDoStoreImpl{
-				cmds: make(chan command),
+			tds := &todoStore{
+				cmds:   make(chan command),
 				items:  tt.fields.items,
 				nextId: tt.fields.nextId,
 			}
 			go tds.launchRequestManager()
 			got, err := tds.Update(tt.args.id, tt.args.task, tt.args.status)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("toDoStoreImpl.Update() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("todoStore.Update() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("toDoStoreImpl.Update() = %v, want %v", got, tt.want)
+				t.Errorf("todoStore.Update() = %v, want %v", got, tt.want)
 			}
 			close(tds.cmds)
 		})
 	}
 }
 
-func Test_toDoStoreImpl_Delete(t *testing.T) {
+func Test_todoStore_Delete(t *testing.T) {
 
 	Init()
 
@@ -269,14 +269,14 @@ func Test_toDoStoreImpl_Delete(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tds := &toDoStoreImpl{
-				cmds: make(chan command),
+			tds := &todoStore{
+				cmds:   make(chan command),
 				items:  tt.fields.items,
 				nextId: tt.fields.nextId,
 			}
 			go tds.launchRequestManager()
 			if err := tds.Delete(tt.args.id); (err != nil) != tt.wantErr {
-				t.Errorf("toDoStoreImpl.Delete() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("todoStore.Delete() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
