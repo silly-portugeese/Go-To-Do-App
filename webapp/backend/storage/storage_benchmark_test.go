@@ -11,47 +11,45 @@ import (
 // go test -bench=. -benchtime=20s
 
 func BenchmarkTest_todoStore_FindAll(b *testing.B) {
-    store := NewInMemoryStore()
-    
-    for i := 0; i < b.N; i++ {
-        store.FindAll()
-    }
+	store := NewPrePopulatedInMemoryStore()
+
+	for i := 0; i < b.N; i++ {
+		store.FindAll()
+	}
 }
 
 func BenchmarkTest_todoStore_FindById(b *testing.B) {
-    store := NewInMemoryStore()
-    id := 10
+	store := NewPrePopulatedInMemoryStore()
+	id := 10
 
-    for i := 0; i < b.N; i++ {
-        _, _ = store.FindById(id)
-    }
+	for i := 0; i < b.N; i++ {
+		_, _ = store.FindById(id)
+	}
 }
 
 func BenchmarkTest_todoStore_Create(b *testing.B) {
-	store := NewInMemoryStore()
+	store := NewPrePopulatedInMemoryStore()
 
-    for i := 0; i < b.N; i++ {
+	for i := 0; i < b.N; i++ {
 		task := "Task " + strconv.Itoa(i)
-        store.Create(task,"Pending")
-    }
+		store.Create(task, "Pending")
+	}
 }
-
 
 func BenchmarkTest_todoStore_Update(b *testing.B) {
-	store := NewInMemoryStore()
-    id := 10
+	store := NewPrePopulatedInMemoryStore()
+	id := 10
 	task := "Do Something"
 
-    for i := 0; i < b.N; i++ {
-       _, _ = store.Update(id, &task, nil)
-    }
+	for i := 0; i < b.N; i++ {
+		_, _ = store.Update(id, &task, nil)
+	}
 }
 
-
 func BenchmarkTest_todoStore_Delete(b *testing.B) {
-	store := NewInMemoryStore()
+	store := NewPrePopulatedInMemoryStore()
 	id := 9
-    for i := 0; i < b.N; i++ {
-        store.Delete(id)
-    }
+	for i := 0; i < b.N; i++ {
+		store.Delete(id)
+	}
 }

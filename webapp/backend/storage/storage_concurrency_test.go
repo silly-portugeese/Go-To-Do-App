@@ -6,13 +6,12 @@ import (
 	"todo-webapp/backend/models"
 )
 
-
 func TestConcurrent_todoStore_FindAll(t *testing.T) {
 
 	// Start multiple goroutines to add items concurrently
 	var wg sync.WaitGroup
 	numGoroutines := 1000
-	store := NewInMemoryStore()
+	store := NewPrePopulatedInMemoryStore()
 
 	for i := 0; i < numGoroutines; i++ {
 		wg.Add(1)
@@ -30,7 +29,7 @@ func TestConcurrent_todoStore_FindById(t *testing.T) {
 	// Start multiple goroutines to add items concurrently
 	var wg sync.WaitGroup
 	numGoroutines := 1000
-	store := NewInMemoryStore()
+	store := NewPrePopulatedInMemoryStore()
 	id := 1
 
 	for i := 0; i < numGoroutines; i++ {
@@ -49,7 +48,7 @@ func TestConcurrent_todoStore_Create(t *testing.T) {
 	// Start multiple goroutines to add items concurrently
 	var wg sync.WaitGroup
 	numGoroutines := 1000
-	store := NewEmptyInMemoryStore()
+	store := NewInMemoryStore()
 
 	for i := 0; i < numGoroutines; i++ {
 		wg.Add(1)
@@ -78,7 +77,7 @@ func TestConcurrent_todoStore_Update(t *testing.T) {
 	// Start multiple goroutines to add items concurrently
 	var wg sync.WaitGroup
 	numGoroutines := 1000
-	store := NewInMemoryStore()
+	store := NewPrePopulatedInMemoryStore()
 	id := 1
 	task := "Task"
 
@@ -93,13 +92,12 @@ func TestConcurrent_todoStore_Update(t *testing.T) {
 	wg.Wait()
 }
 
-
 func TestConcurrent_todoStore_Delete(t *testing.T) {
 
 	// Start multiple goroutines to add items concurrently
 	var wg sync.WaitGroup
 	numGoroutines := 1000
-	store := NewInMemoryStore()
+	store := NewPrePopulatedInMemoryStore()
 	id := 1
 
 	for i := 0; i < numGoroutines; i++ {

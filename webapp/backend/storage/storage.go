@@ -39,7 +39,16 @@ type command struct {
 	reply  chan response
 }
 
+// NewInMemoryStore creates and initializes a new in memory store for TODO items, returning a new `todoStore` instance.
+// It launches a goroutine to manage commands and process requests asynchronously.
 func NewInMemoryStore() todoStore {
+	store := todoStore{items: []models.ToDo{}, nextId: 1, cmds: make(chan command)}
+	go store.launchRequestManager()
+	return store
+}
+
+// NewPrePopulatedInMemoryStore is similar to `NewEmptyInMemoryStore`, but sets up a new `todoStore` instance pre-populated with initial TODO items
+func NewPrePopulatedInMemoryStore() todoStore {
 
 	list := []models.ToDo{
 		{Id: 1, Task: "Buy groceries", Status: models.PENDING},
@@ -58,12 +67,6 @@ func NewInMemoryStore() todoStore {
 	go store.launchRequestManager()
 	return store
 
-}
-
-func NewEmptyInMemoryStore() todoStore {
-	store := todoStore{items: []models.ToDo{}, nextId: 1, cmds: make(chan command)}
-	go store.launchRequestManager()
-	return store
 }
 
 func (tds *todoStore) launchRequestManager() {
@@ -180,29 +183,30 @@ func (tds *todoStore) getItemIndex(id int) int {
 
 // --- Interface Methods ---
 // They are exposed to the rest of the application.
+// Each one sends a task to the RequestManager so the request can be processed
 
-func (tds *todoStore) FindAll() []models.ToDo {
+func (tds todoStore) FindAll() []models.ToDo {
 	ch := make(chan response)
 	tds.cmds <- command{action: "list", reply: ch}
 	response := <-ch
 	return response.items
 }
 
-func (tds *todoStore) FindById(id int) (models.ToDo, error) {
+func (tds todoStore) FindById(id int) (models.ToDo, error) {
 	ch := make(chan response)
 	tds.cmds <- command{action: "read", reply: ch, args: map[string]interface{}{"id": id}}
 	response := <-ch
 	return response.item, response.err
 }
 
-func (tds *todoStore) Create(task string, status models.Status) models.ToDo {
+func (tds todoStore) Create(task string, status models.Status) models.ToDo {
 	ch := make(chan response)
 	tds.cmds <- command{action: "create", reply: ch, args: map[string]interface{}{"task": task, "status": status}}
 	response := <-ch
 	return response.item
 }
 
-func (tds *todoStore) Update(id int, task *string, status *models.Status) (models.ToDo, error) {
+func (tds todoStore) Update(id int, task *string, status *models.Status) (models.ToDo, error) {
 	ch := make(chan response)
 	tds.cmds <- command{action: "update", reply: ch, args: map[string]interface{}{"id": id, "task": task, "status": status}}
 	response := <-ch
@@ -210,7 +214,7 @@ func (tds *todoStore) Update(id int, task *string, status *models.Status) (model
 
 }
 
-func (tds *todoStore) Delete(id int) error {
+func (tds todoStore) Delete(id int) error {
 	ch := make(chan response)
 	tds.cmds <- command{action: "delete", reply: ch, args: map[string]interface{}{"id": id}}
 	response := <-ch
