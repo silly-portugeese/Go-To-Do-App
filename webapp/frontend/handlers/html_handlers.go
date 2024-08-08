@@ -8,18 +8,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"todo-webapp/frontend/models"
 )
-
-type ToDo struct {
-	Id     int    `json:"id"`
-	Task   string `json:"task"`
-	Status string `json:"status"`
-}
-
-type ToDoList struct {
-	Count int    `json:"count"`
-	Items []ToDo `json:"todolist"`
-}
 
 type HTMLHandlers struct {
 	Host string
@@ -107,7 +97,7 @@ func (h *HTMLHandlers) InteractHandler(writer http.ResponseWriter, request *http
 	}
 
 	// Parse the JSON response.
-	var apiData ToDoList
+	var apiData models.ToDoList
 	if err := json.NewDecoder(resp.Body).Decode(&apiData); err != nil {
 		log.Printf("Failed to parse data: %v\n", err)
 		respondWithInternalServerError(writer)
@@ -141,7 +131,7 @@ func (h *HTMLHandlers) EditHandler(writer http.ResponseWriter, request *http.Req
 	}
 
 	// Parse the JSON response.
-	var apiData ToDo
+	var apiData models.ToDo
 	if err := json.NewDecoder(resp.Body).Decode(&apiData); err != nil {
 		log.Printf("Failed to parse data: %v\n", err)
 		respondWithInternalServerError(writer)
@@ -222,7 +212,7 @@ func (h *HTMLHandlers) CreateHandler(writer http.ResponseWriter, request *http.R
 	}
 
 	// Parse the JSON response.
-	var apiData ToDo
+	var apiData models.ToDo
 	if err := json.NewDecoder(resp.Body).Decode(&apiData); err != nil {
 		log.Printf("Failed to parse data: %v\n", err)
 		respondWithInternalServerError(writer)

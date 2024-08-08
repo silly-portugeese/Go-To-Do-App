@@ -9,11 +9,6 @@ import (
 	"todo-webapp/backend/service"
 )
 
-type ToDoList struct {
-	Count int           `json:"count"`
-	Items []models.ToDo `json:"todolist"`
-}
-
 type APIHandlers struct {
 	Service *service.Service
 }
@@ -43,7 +38,7 @@ func getPathId(r *http.Request) (int, error) {
 
 func (h APIHandlers) FindAllHandler(writer http.ResponseWriter, request *http.Request) {
 	items := h.Service.ListAllTItems()
-	tdl := ToDoList{Count: len(items), Items: items}
+	tdl := models.ToDoList{Count: len(items), Items: items}
 	jsonResponse(writer, tdl, http.StatusOK)
 }
 
