@@ -23,8 +23,8 @@
 
 | **Method** | **URL**             | **Description**                   |
 |------------|---------------------|-----------------------------------|
-| GET        | `/todos`            | View all ToDo items.              |
-| GET        | `/todo/edit/{id}`   | Edit a ToDo item by ID.           |
+| GET        | `/todos`            | View all To Do items.              |
+| GET        | `/todo/edit/{id}`   | Edit a To Do item by ID.           |
 
 
 ## Starting the Project
