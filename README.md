@@ -1,45 +1,12 @@
 # To Do Application
 
-This project features a series of Go applications, with a primary focus on developing a comprehensive [Web App](#web-app). The development is structured in stages, starting with some exercises, followed by a command-line interface (CLI) app and culminating in a fully functional web application. The run.sh script helps you execute different parts of the project.
+This project features a series of Go applications, with a primary focus on developing a comprehensive [Web App](./webapp/README.md). The development is structured in stages, starting with some exercises, followed by a command-line interface (CLI) app and culminating in a fully functional web application. The run.sh script helps you execute different parts of the project.
 
 ## Usage
 To use the run.sh script, execute:
 ```sh
 ./run.sh [command]
 ```
-
-### Available Commands
-Run the exercises:
-```sh
-./run.sh exercises
-```
-
-Run the concurrency exercises:
-```sh
-./run.sh concurrency-exercises
-```
-
-Run the cli app:
-```sh
-./run.sh cli-app
-```
-
-Start the backend service for the web app:
-```sh
-./run.sh webapp-backend
-```
-
-Start the frontend service for the web app:
-```sh
-./run.sh webapp-frontend
-```
-
-Start both the backend and frontend services for the web app:
-```sh
-./run.sh webapp
-```
-
-
 
 ## Exercises
 - [x] Create a program using a variadic function to print a list of 10 things To Do. [Variadic Functions][Structures]
@@ -50,15 +17,30 @@ Start both the backend and frontend services for the web app:
     
     Note: Start with the concurrency exercises to get a better understanding of how to use goroutines for this task.
 
+**Run the exercises:**
+```sh
+./run.sh exercises
+```
+
 
 ## Concurrency exercises
 - [x] Write a program to simulate a race condition occurring when one goroutine updates a data variable with odd numbers, while another updates the same data variable with even numbers. After each update , attempt to display the data contained in the data variable to screen. [Goroutines][Concurrency][Race Conditions]
 - [x] Refactor the program created in the previous exercise to use channels, mutexes to synchronise all actions. [Concurrency][Waitgroups][Workerpools][Mutexes]
 
+**Run the concurrency exercises:**
+```sh
+./run.sh concurrency-exercises
+```
+
 
 ## CLI app
 This extends the topics covered in "Exercises" to complete the build of a To Do list application.
 - [x] Create a command line app to manage a To Do list stored in memory. This should enable a user to perform Create, Read, Update, and Delete operations on a list of To Do items. The list should contain a To Do item and a To Do status. [Structures][Arrays][Variadic Functions]
+
+**Run the cli app:**
+```sh
+./run.sh cli-app
+```
 
 
 ## Web app
@@ -66,50 +48,12 @@ This extends the topics covered in "Exercises" to complete the build of a To Do 
 - [ ] Remote Commands - Create a server that can concurrently receive a list of pre-defined commands, The status of the server and the status of each task should be available via specific commands. [Concurrency][Goroutines] [Channels]
 - [x] Extend to a web API to receive web page actions [Remote Commands] that are applied to To Do list stored in memory.[File Server][Web API][Interfaces][Http]
 
-
-**The webapp should incorporate a REST API that does the following:**
-- Read To Do task
-- Create To Do task
-- Read / list all To Do tasks
-- Delete To Do task 
-- Complete To Do task
-
-(Data is in memory only and will be lost on switch off)
-
-### API Endpoints
-
-| **Method** | **URL**             | **Description**                   |
-|------------|---------------------|-----------------------------------|
-| GET        | `/api/todos`        | Retrieve all To Do items.          |
-| GET        | `/api/todo/{id}`    | Retrieve a To Do item by ID.       |
-| POST       | `/api/todo/`        | Create a new To Do item.           |
-| PUT        | `/api/todo/{id}`    | Update a To Do item by ID.         |
-| DELETE     | `/api/todo/{id}`    | Delete a To Do item by ID.         |
-
-### HTML Interface
-
-| **Method** | **URL**             | **Description**                   |
-|------------|---------------------|-----------------------------------|
-| GET        | `/todos`            | View all ToDo items.              |
-| GET        | `/todo/edit/{id}`   | Edit a ToDo item by ID.           |
-
-
-To ensure the quality and performance of the application, you can run the following tests:
-
-**Unit Tests**
+**Start the web app:**
 ```sh
-./run.sh webapp-unit-test
+./run.sh webapp
 ```
 
-**Benchmark Tests**
-```sh
-./run.sh webapp-benchmark-test
-```
-
-**Concurrency Tests**
-```sh
-./run.sh webapp-concurrency-test
-```
+For more information,  refer to the web app [documentation](./webapp/README.md).
 
 ## Stretch Goals
 The stretch goals integrate a traditional database and focus on concurrent user interactions.
