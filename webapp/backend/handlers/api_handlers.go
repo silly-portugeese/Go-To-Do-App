@@ -29,7 +29,7 @@ func jsonResponse(writer http.ResponseWriter, data interface{}, statusCode int) 
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(statusCode)
 
-	if err := json.NewEncoder(writer).Encode(data); err == nil {
+	if err := json.NewEncoder(writer).Encode(data); err != nil {
 		log.Printf("Failed to encode response: %v", err)
 	}
 }
