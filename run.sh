@@ -34,8 +34,26 @@ case "$1" in
         # Wait for all background processes to complete
         wait
         ;;
+    webapp-unit-test)
+        echo "Running unit tests..."
+        cd ./webapp/backend/storage
+        go test -v -run ^Test_
+        cd -  # Return to the original directory
+        ;;
+    webapp-benchmark-test)
+        echo "Running benchmark tests..."
+        cd ./webapp/backend/storage
+        go test -v -bench=. -run ^Benchmark
+        cd -  # Return to the original directory
+        ;;
+    webapp-concurrency-test)
+        echo "Running concurrency tests..."
+        cd ./webapp/backend/storage
+        go test -race -v -run ^TestConcurrent
+        cd -  # Return to the original directory
+        ;;
     *)
-        echo "Usage: $0 {exercises|concurrency-exercises|cli-app|webapp|webapp-backend|webapp-frontend}"
+        echo "Usage: $0 {exercises|concurrency-exercises|cli-app|webapp|webapp-backend|webapp-frontend|webapp-unit-test|webapp-benchmark-test|webapp-concurrency-test}"
         exit 1
         ;;
 esac
