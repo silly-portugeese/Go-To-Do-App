@@ -42,16 +42,16 @@ type command struct {
 func NewInMemoryStore() todoStore {
 
 	list := []models.ToDo{
-		{Id: 1, Task: "Buy groceries", Status: "Pending"},
-		{Id: 2, Task: "Write blog post", Status: "In Progress"},
-		{Id: 3, Task: "Clean the house", Status: "Completed"},
-		{Id: 4, Task: "Pay bills", Status: "Pending"},
-		{Id: 5, Task: "Read a book", Status: "Completed"},
-		{Id: 6, Task: "Prepare presentation", Status: "In Progress"},
-		{Id: 7, Task: "Exercise", Status: "Pending"},
-		{Id: 8, Task: "Call parents", Status: "Completed"},
-		{Id: 9, Task: "Plan vacation", Status: "Pending"},
-		{Id: 10, Task: "Learn Go", Status: "In Progress"},
+		{Id: 1, Task: "Buy groceries", Status: models.PENDING},
+		{Id: 2, Task: "Write blog post", Status: models.IN_PROGRESS},
+		{Id: 3, Task: "Clean the house", Status: models.COMPLETED},
+		{Id: 4, Task: "Pay bills", Status: models.PENDING},
+		{Id: 5, Task: "Read a book", Status: models.COMPLETED},
+		{Id: 6, Task: "Prepare presentation", Status: models.IN_PROGRESS},
+		{Id: 7, Task: "Exercise", Status: models.PENDING},
+		{Id: 8, Task: "Call parents", Status: models.COMPLETED},
+		{Id: 9, Task: "Plan vacation", Status: models.PENDING},
+		{Id: 10, Task: "Learn Go", Status: models.IN_PROGRESS},
 	}
 
 	store := todoStore{items: list, nextId: len(list) + 1, cmds: make(chan command)}
