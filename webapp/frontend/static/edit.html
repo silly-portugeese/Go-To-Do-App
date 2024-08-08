@@ -78,33 +78,21 @@
             <fieldset class="radio-group">
                 <legend>Status:</legend>
 
+                {{$pending := "Pending"}}
+                {{$progress := "In Progress"}}
+                {{$completed := "Completed"}}
                 <div>
-                    {{ if eq .Status "Pending" }}
-                    <input type="radio" id="pending" name="status" value="pending" checked />
-                    {{ else }}
-                    <input type="radio" id="pending" name="status" value="pending" />
-                    {{ end }}
-
+                    <input type="radio" id="pending" name="status" value="pending" {{ if eq .Status $pending }}checked{{ end }} />
                     <label for="pending">Pending</label>
                 </div>
 
                 <div>
-                    {{ if eq .Status "In Progress" }}
-                    <input type="radio" id="in_progress" name="status" value="in progress" checked/>
-                    {{ else }}
-                    <input type="radio" id="in_progress" name="status" value="in progress" />
-                    {{ end }}
-                    
+                    <input type="radio" id="in_progress" name="status" value="in progress"  {{ if eq .Status $progress }}checked{{ end }}/>                    
                     <label for="in_progress">In Progress</label>
                 </div>
 
                 <div>
-                    {{ if eq .Status "Completed" }}
-                    <input type="radio" id="completed" name="status" value="completed" checked/>
-                    {{ else }}
-                    <input type="radio" id="completed" name="status" value="completed" />
-                    {{ end }}
-
+                    <input type="radio" id="completed" name="status" value="completed"  {{ if eq .Status $completed }}checked{{ end }}/>
                     <label for="completed">Completed</label>
                 </div>
             </fieldset>
