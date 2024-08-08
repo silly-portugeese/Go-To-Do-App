@@ -11,8 +11,8 @@ type Service struct {
 	Store storage.IToDoRepository
 }
 
-func NewService(store storage.IToDoRepository) *Service {
-	return &Service{store}
+func NewService(store storage.IToDoRepository) Service {
+	return Service{store}
 }
 
 func (s *Service) StringToStatus(str string) (models.Status, error) {

@@ -16,7 +16,7 @@ func main() {
 	service := service.NewService(&store)
 
 	// Initialize API handlers
-	apiHandlers := &handlers.APIHandlers{
+	apiHandlers := handlers.APIHandlers{
 		Service: service,
 	}
 

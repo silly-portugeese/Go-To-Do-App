@@ -10,7 +10,7 @@ import (
 )
 
 type APIHandlers struct {
-	Service *service.Service
+	Service service.Service
 }
 
 type updateParams struct {
