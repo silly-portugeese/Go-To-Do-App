@@ -45,9 +45,14 @@ func Test_todoStore_FindAll(t *testing.T) {
 		want   []models.ToDo
 	}{
 		{
-			name:   "Valid to do list",
+			name:   "Successful find: return valid prepopulated To Do list",
 			fields: fields{items: todoSlice, nextId: len(todoSlice) + 1},
 			want:   todoSlice,
+		},
+		{
+			name:   "Successful find: return valid empty To Do list",
+			fields: fields{items: []models.ToDo{}, nextId: 1},
+			want:   []models.ToDo{},
 		},
 	}
 
@@ -85,14 +90,14 @@ func Test_todoStore_FindById(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "Return existing To do item",
+			name:    "Successful find: return existing To Do item",
 			fields:  fields{items: todoSlice, nextId: len(todoSlice) + 1},
 			args:    args{id: 3},
-			want:    models.ToDo{Id: 3, Task: "Clean the house", Status: "Completed"},
+			want:    models.ToDo{Id: 3, Task: "Clean the house", Status: models.COMPLETED},
 			wantErr: false,
 		},
 		{
-			name:    "Item  not found",
+			name:    "Unsuccessful find: item not found",
 			fields:  fields{items: todoSlice, nextId: len(todoSlice) + 1},
 			args:    args{id: 456},
 			want:    models.ToDo{},
@@ -139,20 +144,19 @@ func Test_todoStore_Create(t *testing.T) {
 		want   models.ToDo
 	}{
 		{
-			name:   "Create a valid To Do",
+			name:   "Successful create: non empty task and status",
 			fields: fields{items: []models.ToDo{}, nextId: 1},
 			args:   args{task: "Sing", status: models.IN_PROGRESS},
 			want:   models.ToDo{Id: 1, Task: "Sing", Status: models.IN_PROGRESS},
 		},
 		{
-			name:   "Valid next Id defined",
-			fields: fields{items: []models.ToDo{}, nextId: 3},
-			args:   args{task: "Sing", status: models.IN_PROGRESS},
-			want:   models.ToDo{Id: 3, Task: "Sing", Status: models.IN_PROGRESS},
+			name:   "Successful create: empty task and status",
+			fields: fields{items: []models.ToDo{}, nextId: 1},
+			args:   args{task: "", status: ""},
+			want:   models.ToDo{Id: 1, Task: "", Status: ""},
 		},
 	}
 
-	// fmt.Println(todoSlice)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -208,7 +212,7 @@ func Test_todoStore_Update(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "Successful update of item",
+			name:    "Successful update",
 			fields:  fields{items: todoSlice, nextId: len(todoSlice) + 1},
 			args:    args{id: 3, task: &task, status: &status},
 			want:    models.ToDo{Id: 3, Task: "Clean the floor", Status: models.IN_PROGRESS},
