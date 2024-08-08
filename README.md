@@ -76,6 +76,41 @@ This extends the topics covered in "Exercises" to complete the build of a To Do 
 
 (Data is in memory only and will be lost on switch off)
 
+### API Endpoints
+
+| **Method** | **URL**             | **Description**                   |
+|------------|---------------------|-----------------------------------|
+| GET        | `/api/todos`        | Retrieve all To Do items.          |
+| GET        | `/api/todo/{id}`    | Retrieve a To Do item by ID.       |
+| POST       | `/api/todo/`        | Create a new To Do item.           |
+| PUT        | `/api/todo/{id}`    | Update a To Do item by ID.         |
+| DELETE     | `/api/todo/{id}`    | Delete a To Do item by ID.         |
+
+### HTML Interface
+
+| **Method** | **URL**             | **Description**                   |
+|------------|---------------------|-----------------------------------|
+| GET        | `/todos`            | View all ToDo items.              |
+| GET        | `/todo/edit/{id}`   | Edit a ToDo item by ID.           |
+
+
+To ensure the quality and performance of the application, you can run the following tests:
+
+**Unit Tests**
+```sh
+./run.sh webapp-unit-test
+```
+
+**Benchmark Tests**
+```sh
+./run.sh webapp-benchmark-test
+```
+
+**Concurrency Tests**
+```sh
+./run.sh webapp-concurrency-test
+```
+
 ## Stretch Goals
 The stretch goals integrate a traditional database and focus on concurrent user interactions.
 
