@@ -21,6 +21,9 @@
 
 ## HTML Interface
 
+HTMX is used to enhance the HTML interface, making it more dynamic. It is included via a CDN for simplicity. For more details on HTMX, refer its [documentation](https://htmx.org/).
+
+
 | **Method** | **URL**             | **Description**                   |
 |------------|---------------------|-----------------------------------|
 | GET        | `/todos`            | View all To Do items.              |
