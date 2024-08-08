@@ -58,24 +58,22 @@
 | PUT        | `/api/todo/update/{id}`  | Update a To Do item by ID.        |
 | DELETE     | `/api/todo//delete/{id}` | Delete a To Do item by ID.        |
 
-###	Request Body:
+###	Request Body
 
-**POST /api/todo/**
+- POST /api/todo/
+    ```sh
+    {
+        "task": "Learn Go"
+    }
+    ```
 
-```sh
-{
-  "task": "Learn Go",
-}
-```
-
-**PUT /api/todo/update/{id}
-
-```sh
-{
-  "task": "Learn Go",
-  "status": "in progress",  // Options: "pending", "in progress", "completed"
-}
-```
+- PUT /api/todo/update/{id}
+    ```sh
+    {
+        "task": "Learn Go",
+        "status": "in progress",  // Options: "pending", "in progress", "completed"
+    }
+    ```
 
 ## HTML Interface
 
