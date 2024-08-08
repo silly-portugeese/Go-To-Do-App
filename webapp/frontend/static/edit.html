@@ -29,7 +29,8 @@
             margin-bottom: 20px;
         }
 
-        .todo-form div, .todo-form fieldset {
+        .todo-form div,
+        .todo-form fieldset {
             margin: 15px 0;
         }
 
@@ -76,18 +77,34 @@
 
             <fieldset class="radio-group">
                 <legend>Status:</legend>
+
                 <div>
+                    {{ if eq .Status "Pending" }}
                     <input type="radio" id="pending" name="status" value="pending" checked />
+                    {{ else }}
+                    <input type="radio" id="pending" name="status" value="pending" />
+                    {{ end }}
+
                     <label for="pending">Pending</label>
                 </div>
 
                 <div>
+                    {{ if eq .Status "In Progress" }}
+                    <input type="radio" id="in_progress" name="status" value="in progress" checked/>
+                    {{ else }}
                     <input type="radio" id="in_progress" name="status" value="in progress" />
+                    {{ end }}
+                    
                     <label for="in_progress">In Progress</label>
                 </div>
 
                 <div>
+                    {{ if eq .Status "Completed" }}
+                    <input type="radio" id="completed" name="status" value="completed" checked/>
+                    {{ else }}
                     <input type="radio" id="completed" name="status" value="completed" />
+                    {{ end }}
+
                     <label for="completed">Completed</label>
                 </div>
             </fieldset>

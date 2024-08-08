@@ -1,13 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"todo-webapp/frontend/handlers"
-
 )
 
 func main() {
-
 
 	// Initialize HTML handlers
 	htmlHandlers := &handlers.HTMLHandlers{
@@ -16,13 +15,11 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	
 	// HTML endpoints
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("/static"))))
 	// fs := http.FileServer(http.Dir("./static"))
 	// http.Handle("/static/*", http.StripPrefix("/static/", fs))
-
 
 	// fs := http.FileServer(http.Dir("./static"))
 	// http.Handle("/", fs)
@@ -33,6 +30,12 @@ func main() {
 	mux.HandleFunc("POST /todo/update/{id}", htmlHandlers.UpdateHandler)
 	mux.HandleFunc("DELETE /todo/delete/{id}", htmlHandlers.DeleteHandler)
 
-	http.ListenAndServe(":8002", mux)
-	
+	port := "8002"
+
+	fmt.Printf("Frontend server is listening on http://localhost:%s\n", port)
+
+	if err := http.ListenAndServe(":"+port, mux); err != nil {
+		fmt.Printf("Error starting server: %s\n", err)
+	}
+
 }

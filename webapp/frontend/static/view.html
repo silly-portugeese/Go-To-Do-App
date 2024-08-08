@@ -136,15 +136,15 @@
             <li id="todo-item-{{ .Id }}" class="tod0-item">
                 <div class="task">{{.Task}}</div>
 
-                {{ if and (eq .Status "Pending") }}
+                {{ if eq .Status "Pending" }}
                 <div class="status" style="background-color: #f0ac00;">{{.Status}}</div>
                 {{ end }}
 
-                {{ if and (eq .Status "In Progress") }}
+                {{ if eq .Status "In Progress"}}
                 <div class="status" style="background-color:  #1976D2;">{{.Status}}</div>
                 {{ end }}
 
-                {{ if and (eq .Status "Completed") }}
+                {{ if eq .Status "Completed" }}
                 <div class="status" style="background-color: #388E3C;">{{.Status}}</div>
                 {{ end }}
 
