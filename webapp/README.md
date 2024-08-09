@@ -42,6 +42,10 @@
         │   └── models.go
         │ 
         ├── static
+        │   ├── css
+        │   │   ├── edit.css
+        │   │   └── view.css
+        │   │
         │   ├── edit.html
         │   └── view.html
         │          
