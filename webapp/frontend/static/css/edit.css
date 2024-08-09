@@ -1,0 +1,56 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    max-width: 600px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+
+.todo-form {
+    margin-bottom: 20px;
+}
+
+.todo-form div,
+.todo-form fieldset {
+    margin: 15px 0;
+}
+
+.todo-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+
+.todo-form input[type="text"] {
+    padding: 10px;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    flex-grow: 1
+}
+
+.todo-form input[type="submit"] {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #2baf2b;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+.todo-form input[type="submit"]:hover {
+    background-color: #248f24;
+}
