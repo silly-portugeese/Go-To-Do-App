@@ -12,14 +12,6 @@ import (
 // Receive-Only Channel (<-chan T): This type of channel can only be used to receive data.
 // Bidirectional Channel (chan T): This type of channel can be used for both sending and receiving data.
 
-type IToDoRepository interface {
-	FindAll() []models.ToDo
-	FindById(int) (models.ToDo, error)
-	Create(string, models.Status) models.ToDo
-	Update(int, *string, *models.Status) (models.ToDo, error)
-	Delete(int) error
-}
-
 // Implementation
 type todoStore struct {
 	cmds   chan command
