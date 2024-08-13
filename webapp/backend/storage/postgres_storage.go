@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 	"todo-webapp/backend/models"
+
 	"github.com/jackc/pgx/v5"
 )
 
@@ -35,7 +36,7 @@ func (pgs PostgresStore) Close() {
 // Each one sends a task to the RequestManager so the request can be processed
 
 func (pgs PostgresStore) FindAll() []models.ToDo {
-	rows, err := pgs.conn.Query(context.Background(), "SELECT * FROM mytodos")
+	rows, err := pgs.conn.Query(context.Background(), "SELECT * FROM todos")
 
 	if err != nil {
 		log.Printf("Query failed: %v\n", err)
@@ -53,7 +54,7 @@ func (pgs PostgresStore) FindAll() []models.ToDo {
 
 func (pgs PostgresStore) FindById(id int) (models.ToDo, error) {
 
-	row, err := pgs.conn.Query(context.Background(), "SELECT * FROM mytodos WHERE id=$1", id)
+	row, err := pgs.conn.Query(context.Background(), "SELECT * FROM todos WHERE id=$1", id)
 
 	if err != nil {
 		log.Printf("Query failed: %v\n", err)
@@ -71,7 +72,7 @@ func (pgs PostgresStore) FindById(id int) (models.ToDo, error) {
 
 func (pgs PostgresStore) Create(task string, status models.Status) models.ToDo {
 
-	row, err := pgs.conn.Query(context.Background(), "INSERT INTO mytodos (task, status) VALUES ($1, $2) RETURNING id, task, status", task, status)
+	row, err := pgs.conn.Query(context.Background(), "INSERT INTO todos (task, status) VALUES ($1, $2) RETURNING id, task, status", task, status)
 	if err != nil {
 		log.Printf("Query failed: %v\n", err)
 		return models.ToDo{}
@@ -103,8 +104,8 @@ func (pgs PostgresStore) Update(id int, task *string, status *models.Status) (mo
 	}
 
 	setClause := strings.Join(setClauses, ", ")
-	query := fmt.Sprintf("UPDATE mytodos SET %s WHERE id = @id RETURNING id, task, status", setClause)
-	 
+	query := fmt.Sprintf("UPDATE todos SET %s WHERE id = @id RETURNING id, task, status", setClause)
+
 	row, err := pgs.conn.Query(context.Background(), query, args)
 	if err != nil {
 		log.Printf("Query failed: %v\n", err)
@@ -122,7 +123,7 @@ func (pgs PostgresStore) Update(id int, task *string, status *models.Status) (mo
 
 func (pgs PostgresStore) Delete(id int) error {
 
-	_, err := pgs.conn.Exec(context.Background(), "DELETE FROM mytodos WHERE id=$1", id)
+	_, err := pgs.conn.Exec(context.Background(), "DELETE FROM todos WHERE id=$1", id)
 	if err != nil {
 		log.Printf("Delete failed: %v\n", err)
 		return err
