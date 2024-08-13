@@ -6,28 +6,27 @@ import (
 	"log"
 	"strings"
 	"todo-webapp/backend/models"
-
 	"github.com/jackc/pgx/v5"
 )
 
-type PostgresStore struct {
+type postgresStore struct {
 	conn *pgx.Conn
 }
 
-func NewPostgres(username, password, host, port, dbName string) (PostgresStore, error) {
+func NewPostgres(username, password, host, port, dbName string) (postgresStore, error) {
 
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", username, password, host, port, dbName)
 	fmt.Println(connStr)
 
 	conn, err := pgx.Connect(context.Background(), connStr)
 	if err != nil {
-		return PostgresStore{}, err
+		return postgresStore{}, err
 	}
 
-	return PostgresStore{conn: conn}, nil
+	return postgresStore{conn: conn}, nil
 }
 
-func (pgs PostgresStore) Close() {
+func (pgs postgresStore) Close() {
 	pgs.conn.Close(context.Background())
 }
 
@@ -35,15 +34,15 @@ func (pgs PostgresStore) Close() {
 // They are exposed to the rest of the application.
 // Each one sends a task to the RequestManager so the request can be processed
 
-func (pgs PostgresStore) FindAll() []models.ToDo {
-	rows, err := pgs.conn.Query(context.Background(), "SELECT * FROM todos")
+func (pgs postgresStore) FindAll() []models.ToDo {
+	rows, err := pgs.conn.Query(context.Background(), "SELECT id, task, status FROM todos")
 
 	if err != nil {
 		log.Printf("Query failed: %v\n", err)
 		return []models.ToDo{}
 	}
 
-	items, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.ToDo])
+	items, err := pgx.CollectRows(rows, pgx.RowToStructByPos[models.ToDo])
 	if err != nil {
 		log.Printf("CollectRows failed: %v\n", err)
 		return items
@@ -52,43 +51,31 @@ func (pgs PostgresStore) FindAll() []models.ToDo {
 	return items
 }
 
-func (pgs PostgresStore) FindById(id int) (models.ToDo, error) {
+func (pgs postgresStore) FindById(id int) (models.ToDo, error) {
 
-	row, err := pgs.conn.Query(context.Background(), "SELECT * FROM todos WHERE id=$1", id)
+	var item models.ToDo
+	err := pgs.conn.QueryRow(context.Background(), "SELECT id, task, status FROM todos WHERE id=$1::int", id).Scan(&item.Id, &item.Task, &item.Status)
 
 	if err != nil {
-		log.Printf("Query failed: %v\n", err)
-		return models.ToDo{}, err
-	}
-
-	item, err := pgx.CollectOneRow(row, pgx.RowToStructByName[models.ToDo])
-	if err != nil {
-		log.Printf("CollectOneRow failed: %v\n", err)
+		log.Printf("Scan failed: %v\n", err)
 		return item, err
 	}
 
 	return item, nil
 }
 
-func (pgs PostgresStore) Create(task string, status models.Status) models.ToDo {
-
-	row, err := pgs.conn.Query(context.Background(), "INSERT INTO todos (task, status) VALUES ($1, $2) RETURNING id, task, status", task, status)
+func (pgs postgresStore) Create(task string, status models.Status) models.ToDo {
+	var item models.ToDo
+	err := pgs.conn.QueryRow(context.Background(), "INSERT INTO todos (task, status) VALUES ($1, $2) RETURNING id, task, status", task, status).Scan(&item.Id, &item.Task, &item.Status)
+	
 	if err != nil {
-		log.Printf("Query failed: %v\n", err)
-		return models.ToDo{}
-	}
-
-	item, err := pgx.CollectOneRow(row, pgx.RowToStructByName[models.ToDo])
-
-	if err != nil {
-		log.Printf("CollectOneRow failed: %v\n", err)
-		return models.ToDo{}
+		log.Printf("Scan failed: %v\n", err)
 	}
 
 	return item
 }
 
-func (pgs PostgresStore) Update(id int, task *string, status *models.Status) (models.ToDo, error) {
+func (pgs postgresStore) Update(id int, task *string, status *models.Status) (models.ToDo, error) {
 
 	var setClauses []string
 	args := pgx.NamedArgs{"id": id}
@@ -106,22 +93,16 @@ func (pgs PostgresStore) Update(id int, task *string, status *models.Status) (mo
 	setClause := strings.Join(setClauses, ", ")
 	query := fmt.Sprintf("UPDATE todos SET %s WHERE id = @id RETURNING id, task, status", setClause)
 
-	row, err := pgs.conn.Query(context.Background(), query, args)
+	var item models.ToDo
+	err := pgs.conn.QueryRow(context.Background(), query, args).Scan(&item.Id, &item.Task, &item.Status)
 	if err != nil {
-		log.Printf("Query failed: %v\n", err)
-		return models.ToDo{}, err
+		log.Printf("Scan failed: %v\n", err)
+		return item, err
 	}
-
-	item, err := pgx.CollectOneRow(row, pgx.RowToStructByName[models.ToDo])
-	if err != nil {
-		log.Printf("CollectOneRow failed: %v\n", err)
-		return models.ToDo{}, err
-	}
-
 	return item, nil
 }
 
-func (pgs PostgresStore) Delete(id int) error {
+func (pgs postgresStore) Delete(id int) error {
 
 	_, err := pgs.conn.Exec(context.Background(), "DELETE FROM todos WHERE id=$1", id)
 	if err != nil {
