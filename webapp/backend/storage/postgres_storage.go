@@ -7,27 +7,33 @@ import (
 	"strings"
 	"todo-webapp/backend/models"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+
 type postgresStore struct {
-	conn *pgx.Conn
+	dbpool *pgxpool.Pool
 }
 
 func NewPostgres(username, password, host, port, dbName string) (postgresStore, error) {
 
-	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", username, password, host, port, dbName)
-	fmt.Println(connStr)
+	databaseUrl := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", username, password, host, port, dbName)
 
-	conn, err := pgx.Connect(context.Background(), connStr)
+	dbpool, err := pgxpool.New(context.Background(), databaseUrl)
+	if err != nil {
+		log.Fatal("Error while creating pool")
+	}
+
+	// conn, err := pgx.Connect(context.Background(), connStr)
 	if err != nil {
 		return postgresStore{}, err
 	}
 
-	return postgresStore{conn: conn}, nil
+	return postgresStore{dbpool: dbpool}, nil
 }
 
 func (pgs postgresStore) Close() {
-	pgs.conn.Close(context.Background())
+	pgs.dbpool.Close()
 }
 
 // --- Interface Methods ---
@@ -35,7 +41,9 @@ func (pgs postgresStore) Close() {
 // Each one sends a task to the RequestManager so the request can be processed
 
 func (pgs postgresStore) FindAll() []models.ToDo {
-	rows, err := pgs.conn.Query(context.Background(), "SELECT id, task, status FROM todos")
+	
+	query := "SELECT id, task, status FROM todos"
+	rows, err := pgs.dbpool.Query(context.Background(), query)
 
 	if err != nil {
 		log.Printf("Query failed: %v\n", err)
@@ -54,7 +62,12 @@ func (pgs postgresStore) FindAll() []models.ToDo {
 func (pgs postgresStore) FindById(id int) (models.ToDo, error) {
 
 	var item models.ToDo
-	err := pgs.conn.QueryRow(context.Background(), "SELECT id, task, status FROM todos WHERE id=$1::int", id).Scan(&item.Id, &item.Task, &item.Status)
+
+	query := "SELECT (id, task, status) FROM todos WHERE id=$1::int"
+	err := pgs.dbpool.QueryRow(context.Background(), query, id).Scan(&item)
+
+	// query :=  "SELECT id, task, status FROM todos WHERE id=$1::int"
+	// err := pgs.conn.QueryRow(context.Background(), query, id).Scan(&item.Id, &item.Task, &item.Status)
 
 	if err != nil {
 		log.Printf("Scan failed: %v\n", err)
@@ -65,9 +78,15 @@ func (pgs postgresStore) FindById(id int) (models.ToDo, error) {
 }
 
 func (pgs postgresStore) Create(task string, status models.Status) models.ToDo {
+
 	var item models.ToDo
-	err := pgs.conn.QueryRow(context.Background(), "INSERT INTO todos (task, status) VALUES ($1, $2) RETURNING id, task, status", task, status).Scan(&item.Id, &item.Task, &item.Status)
-	
+
+	query := "INSERT INTO todos (task, status) VALUES ($1, $2) RETURNING (id, task, status)"
+	err := pgs.dbpool.QueryRow(context.Background(), query, task, status).Scan(&item)
+
+	// query := "INSERT INTO todos (task, status) VALUES ($1, $2) RETURNING id, task, status"
+	// err := pgs.conn.QueryRow(context.Background(), query, task, status).Scan(&item.Id, &item.Task, &item.Status)
+
 	if err != nil {
 		log.Printf("Scan failed: %v\n", err)
 	}
@@ -91,10 +110,14 @@ func (pgs postgresStore) Update(id int, task *string, status *models.Status) (mo
 	}
 
 	setClause := strings.Join(setClauses, ", ")
-	query := fmt.Sprintf("UPDATE todos SET %s WHERE id = @id RETURNING id, task, status", setClause)
 
 	var item models.ToDo
-	err := pgs.conn.QueryRow(context.Background(), query, args).Scan(&item.Id, &item.Task, &item.Status)
+	query := fmt.Sprintf("UPDATE todos SET %s WHERE id = @id RETURNING (id, task, status)", setClause)
+	err := pgs.dbpool.QueryRow(context.Background(), query, args).Scan(&item)
+
+	// query := fmt.Sprintf("UPDATE todos SET %s WHERE id = @id RETURNING id, task, status", setClause)
+	// err := pgs.conn.QueryRow(context.Background(), query, args).Scan(&item.Id, &item.Task, &item.Status)
+
 	if err != nil {
 		log.Printf("Scan failed: %v\n", err)
 		return item, err
@@ -104,7 +127,8 @@ func (pgs postgresStore) Update(id int, task *string, status *models.Status) (mo
 
 func (pgs postgresStore) Delete(id int) error {
 
-	_, err := pgs.conn.Exec(context.Background(), "DELETE FROM todos WHERE id=$1", id)
+	query := "DELETE FROM todos WHERE id=$1"
+	_, err := pgs.dbpool.Exec(context.Background(), query, id)
 	if err != nil {
 		log.Printf("Delete failed: %v\n", err)
 		return err
