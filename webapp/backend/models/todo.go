@@ -12,6 +12,7 @@ type ToDo struct {
 	Id     int    `json:"id"`
 	Task   string `json:"task"`
 	Status Status `json:"status"`
+	UserId int    `json:"userid"`
 }
 
 type ToDoList struct {
