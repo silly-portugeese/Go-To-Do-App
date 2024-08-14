@@ -2,7 +2,7 @@ CREATE TYPE status_opts AS ENUM('Pending', 'In Progress', 'Completed');
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    username varchar(50) NOT NULL UNIQUE,
+    username varchar(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE todos (

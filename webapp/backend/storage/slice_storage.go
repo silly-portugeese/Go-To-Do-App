@@ -43,16 +43,16 @@ func NewInMemoryStore() todoStore {
 func NewPrePopulatedInMemoryStore() todoStore {
 
 	list := []models.ToDo{
-		{Id: 1, Task: "Buy groceries", Status: models.PENDING},
-		{Id: 2, Task: "Write blog post", Status: models.IN_PROGRESS},
-		{Id: 3, Task: "Clean the house", Status: models.COMPLETED},
-		{Id: 4, Task: "Pay bills", Status: models.PENDING},
-		{Id: 5, Task: "Read a book", Status: models.COMPLETED},
-		{Id: 6, Task: "Prepare presentation", Status: models.IN_PROGRESS},
-		{Id: 7, Task: "Exercise", Status: models.PENDING},
-		{Id: 8, Task: "Call parents", Status: models.COMPLETED},
-		{Id: 9, Task: "Plan vacation", Status: models.PENDING},
-		{Id: 10, Task: "Learn Go", Status: models.IN_PROGRESS},
+		{Id: 1, Task: "Buy groceries", Status: models.PENDING, UserId: 1},
+		{Id: 2, Task: "Write blog post", Status: models.IN_PROGRESS, UserId: 1},
+		{Id: 3, Task: "Clean the house", Status: models.COMPLETED, UserId: 2},
+		{Id: 4, Task: "Pay bills", Status: models.PENDING, UserId: 2},
+		{Id: 5, Task: "Read a book", Status: models.COMPLETED, UserId: 3},
+		{Id: 6, Task: "Prepare presentation", Status: models.IN_PROGRESS, UserId: 3},
+		{Id: 7, Task: "Exercise", Status: models.PENDING, UserId: 3},
+		{Id: 8, Task: "Call parents", Status: models.COMPLETED, UserId: 3},
+		{Id: 9, Task: "Plan vacation", Status: models.PENDING, UserId: 4},
+		{Id: 10, Task: "Learn Go", Status: models.IN_PROGRESS, UserId: 4},
 	}
 
 	store := todoStore{items: list, nextId: len(list) + 1, cmds: make(chan command)}
@@ -108,28 +108,31 @@ func (tds *todoStore) executeFindById(cmd command) {
 
 func (tds *todoStore) executeCreate(cmd command) {
 
-	task, hasTask := cmd.args["task"].(string)
-	status, hasStatus := cmd.args["status"].(models.Status)
-
-	if !hasTask || !hasStatus {
-		cmd.reply <- response{err: errors.New("missing arguments")}
+	params, hasParams := cmd.args["params"].(models.TodoCreateParams)
+	
+	if !hasParams {
+		cmd.reply <- response{item: models.ToDo{}, err: errors.New("missing arguments")}
 		return
 	}
 
-	item := models.ToDo{Id: tds.nextId, Task: task, Status: status}
+	item := models.ToDo{Id: tds.nextId, Task: params.Task, Status: params.Status, UserId: params.UserId}
 	tds.items = append(tds.items, item)
 	tds.nextId++
 	cmd.reply <- response{item: item}
 }
 
 func (tds *todoStore) executeUpdate(cmd command) {
-
+	
 	id, hasId := cmd.args["id"].(int)
-	task, _ := cmd.args["task"].(*string)
-	status, _ := cmd.args["status"].(*models.Status)
+	params, hasParams := cmd.args["params"].(models.TodoUpdateParams)
 
 	if !hasId {
 		cmd.reply <- response{item: models.ToDo{}, err: fmt.Errorf("missing id: %d", id)}
+		return
+	}
+
+	if !hasParams {
+		cmd.reply <- response{item: models.ToDo{}, err: errors.New("missing arguments")}
 		return
 	}
 
@@ -140,14 +143,14 @@ func (tds *todoStore) executeUpdate(cmd command) {
 	}
 
 	// simulate optional parameters by using pointers.
-	if task != nil {
-		tds.items[index].Task = *task
+	if params.Task != nil {
+		tds.items[index].Task = *params.Task
 	}
 
-	if status != nil {
-		tds.items[index].Status = *status
+	if params.Status != nil {
+		tds.items[index].Status = *params.Status
 	}
-
+	
 	cmd.reply <- response{item: tds.items[index], err: nil}
 }
 
@@ -191,16 +194,16 @@ func (tds todoStore) FindById(id int) (models.ToDo, error) {
 	return response.item, response.err
 }
 
-func (tds todoStore) Create(task string, status models.Status) models.ToDo {
+func (tds todoStore) Create(params models.TodoCreateParams) models.ToDo {
 	ch := make(chan response)
-	tds.cmds <- command{action: "create", reply: ch, args: map[string]interface{}{"task": task, "status": status}}
+	tds.cmds <- command{action: "create", reply: ch, args: map[string]interface{}{"params":  params}}
 	response := <-ch
 	return response.item
 }
 
-func (tds todoStore) Update(id int, task *string, status *models.Status) (models.ToDo, error) {
+func (tds todoStore) Update(id int, params models.TodoUpdateParams) (models.ToDo, error) {
 	ch := make(chan response)
-	tds.cmds <- command{action: "update", reply: ch, args: map[string]interface{}{"id": id, "task": task, "status": status}}
+	tds.cmds <- command{action: "update", reply: ch, args: map[string]interface{}{"id": id, "params": params}}
 	response := <-ch
 	return response.item, response.err
 

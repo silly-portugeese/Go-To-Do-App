@@ -7,7 +7,6 @@ import (
 	"todo-webapp/backend/handlers"
 	"todo-webapp/backend/service"
 	"todo-webapp/backend/storage"
-
 )
 
 func main() {
@@ -23,7 +22,7 @@ func main() {
 
 	service := service.NewService(store)
 
-	// // Initialize API handlers
+	// Initialize API handlers
 	apiHandlers := handlers.APIHandlers{
 		Service: service,
 	}
@@ -33,7 +32,7 @@ func main() {
 	// // JSON API endpoints
 	mux.HandleFunc("GET /api/todos", apiHandlers.FindAllHandler)
 	mux.HandleFunc("GET /api/todo/{id}", apiHandlers.FindByIdHandler)
-	mux.HandleFunc("POST /api/todo/", apiHandlers.CreateHandler)
+	mux.HandleFunc("POST /api/todo", apiHandlers.CreateHandler)
 	mux.HandleFunc("PUT /api/todo/update/{id}", apiHandlers.UpdateHandler)
 	mux.HandleFunc("DELETE /api/todo/delete/{id}", apiHandlers.DeleteHandler)
 

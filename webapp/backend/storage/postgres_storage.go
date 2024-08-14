@@ -42,7 +42,7 @@ func (pgs postgresStore) Close() {
 
 func (pgs postgresStore) FindAll() []models.ToDo {
 	
-	query := "SELECT id, task, status FROM todos"
+	query := "SELECT id, task, status, user_id FROM todos"
 	rows, err := pgs.dbpool.Query(context.Background(), query)
 
 	if err != nil {
@@ -63,7 +63,7 @@ func (pgs postgresStore) FindById(id int) (models.ToDo, error) {
 
 	var item models.ToDo
 
-	query := "SELECT (id, task, status) FROM todos WHERE id=$1::int"
+	query := "SELECT (id, task, status, user_id) FROM todos WHERE id=$1::int"
 	err := pgs.dbpool.QueryRow(context.Background(), query, id).Scan(&item)
 
 	// query :=  "SELECT id, task, status FROM todos WHERE id=$1::int"
@@ -77,12 +77,13 @@ func (pgs postgresStore) FindById(id int) (models.ToDo, error) {
 	return item, nil
 }
 
-func (pgs postgresStore) Create(task string, status models.Status) models.ToDo {
+func (pgs postgresStore) Create(params models.TodoCreateParams) models.ToDo {
 
 	var item models.ToDo
-
-	query := "INSERT INTO todos (task, status) VALUES ($1, $2) RETURNING (id, task, status)"
-	err := pgs.dbpool.QueryRow(context.Background(), query, task, status).Scan(&item)
+	// TODO: validation
+	// TODO: check if user exists
+	query := "INSERT INTO todos (task, status, user_id) VALUES ($1, $2, $3) RETURNING (id, task, status, user_id)"
+	err := pgs.dbpool.QueryRow(context.Background(), query, params.Task, params.Status, params.UserId).Scan(&item)
 
 	// query := "INSERT INTO todos (task, status) VALUES ($1, $2) RETURNING id, task, status"
 	// err := pgs.conn.QueryRow(context.Background(), query, task, status).Scan(&item.Id, &item.Task, &item.Status)
@@ -94,25 +95,25 @@ func (pgs postgresStore) Create(task string, status models.Status) models.ToDo {
 	return item
 }
 
-func (pgs postgresStore) Update(id int, task *string, status *models.Status) (models.ToDo, error) {
+func (pgs postgresStore) Update(id int, params models.TodoUpdateParams) (models.ToDo, error) {
 
 	var setClauses []string
 	args := pgx.NamedArgs{"id": id}
 
-	if task != nil {
+	if params.Task != nil {
 		setClauses = append(setClauses, "task = @task")
-		args["task"] = *task
+		args["task"] = *params.Task
 	}
 
-	if status != nil {
+	if params.Status != nil {
 		setClauses = append(setClauses, "status = @status")
-		args["status"] = *status
+		args["status"] = *params.Status
 	}
 
 	setClause := strings.Join(setClauses, ", ")
 
 	var item models.ToDo
-	query := fmt.Sprintf("UPDATE todos SET %s WHERE id = @id RETURNING (id, task, status)", setClause)
+	query := fmt.Sprintf("UPDATE todos SET %s WHERE id = @id RETURNING (id, task, status, user_id)", setClause)
 	err := pgs.dbpool.QueryRow(context.Background(), query, args).Scan(&item)
 
 	// query := fmt.Sprintf("UPDATE todos SET %s WHERE id = @id RETURNING id, task, status", setClause)

@@ -48,7 +48,9 @@ func (s *Service) CreateItem(task string) (models.ToDo, error) {
 	if task == "" {
 		return models.ToDo{}, errors.New("task is empty")
 	}
-	item := s.Store.Create(task, models.PENDING)
+	// TODO: pass the user id
+	params := models.TodoCreateParams{Task: task, Status: models.PENDING, UserId: 1}
+	item := s.Store.Create(params)
 	return item, nil
 }
 
@@ -62,22 +64,25 @@ func (s *Service) UpdateItem(id int, task string, statusStr string) (models.ToDo
 		return models.ToDo{}, errors.New("at least one field (task or status) must be provided")
 	}
 
-	// Only task is provided
-	if statusStr == "" {
-		return s.Store.Update(id, &task, nil)
+	var params models.TodoUpdateParams
+
+	// Set task if not empty
+	if task != "" {
+		params.Task = &task
 	}
 
-	status, err := s.StringToStatus(statusStr)
-	if err != nil {
-		return models.ToDo{}, err
+	// Set status if not empty and valid
+	if statusStr != "" {
+
+		status, err := s.StringToStatus(statusStr)
+		if err != nil {
+			return models.ToDo{}, err
+		}
+
+		params.Status = &status
 	}
-	
-	// Only status is provided
-	if task == "" {
-		return s.Store.Update(id, nil, &status)
-	}
-	// Both task and status are provided
-	return s.Store.Update(id, &task, &status)
+
+	return s.Store.Update(id, params)
 }
 
 func (s *Service) DeleteItem(id int) error {
