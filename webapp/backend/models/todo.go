@@ -20,15 +20,15 @@ type ToDoList struct {
 	Items []ToDo `json:"todolist"`
 }
 
-// TodoCreateParams encapsulates the parameters needed to create a new todo.
-type TodoCreateParams struct {
+// TodoCreateData encapsulates the parameters needed to create a new todo.
+type TodoCreateData struct {
 	Task   string
 	Status Status
 	UserId int
 }
 
-// TodoUpdateParams encapsulates the parameters needed to update an existing todo.
-type TodoUpdateParams struct {
+// TodoUpdateData encapsulates the parameters needed to update an existing todo.
+type TodoUpdateData struct {
 	Task   *string // Use pointers to allow partial updates
 	Status *Status
 }

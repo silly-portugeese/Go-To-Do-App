@@ -7,6 +7,16 @@ import (
 	"todo-webapp/backend/storage"
 )
 
+type TodoCreateParams struct {
+	Task   string
+	UserId int
+}
+
+type TodoUpdateParams struct {
+	Task   string
+	Status string
+}
+
 type Service struct {
 	Store storage.IToDoRepository
 }
@@ -42,33 +52,34 @@ func (s *Service) GetItemById(id int) (models.ToDo, error) {
 	return s.Store.FindById(id)
 }
 
-func (s *Service) CreateItem(task string) (models.ToDo, error) {
+func (s *Service) CreateItem(params TodoCreateParams) (models.ToDo, error) {
 
-	task = strings.TrimSpace(task)
+	task := strings.TrimSpace(params.Task)
 	if task == "" {
 		return models.ToDo{}, errors.New("task is empty")
 	}
+
 	// TODO: pass the user id
-	params := models.TodoCreateParams{Task: task, Status: models.PENDING, UserId: 1}
-	item := s.Store.Create(params)
+	storeParams := models.TodoCreateData{Task: task, Status: models.PENDING, UserId: 1}
+	item := s.Store.Create(storeParams)
 	return item, nil
 }
 
-func (s *Service) UpdateItem(id int, task string, statusStr string) (models.ToDo, error) {
+func (s *Service) UpdateItem(id int, params TodoUpdateParams) (models.ToDo, error) {
 
-	task = strings.TrimSpace(task)
-	statusStr = strings.TrimSpace(statusStr)
+	task := strings.TrimSpace(params.Task)
+	statusStr := strings.TrimSpace(params.Status)
 
 	// Check that at least one field is provided and neither is an empty string
 	if (task == "") && (statusStr == "") {
 		return models.ToDo{}, errors.New("at least one field (task or status) must be provided")
 	}
 
-	var params models.TodoUpdateParams
+	var storeParams models.TodoUpdateData
 
 	// Set task if not empty
 	if task != "" {
-		params.Task = &task
+		storeParams.Task = &task
 	}
 
 	// Set status if not empty and valid
@@ -79,10 +90,10 @@ func (s *Service) UpdateItem(id int, task string, statusStr string) (models.ToDo
 			return models.ToDo{}, err
 		}
 
-		params.Status = &status
+		storeParams.Status = &status
 	}
 
-	return s.Store.Update(id, params)
+	return s.Store.Update(id, storeParams)
 }
 
 func (s *Service) DeleteItem(id int) error {

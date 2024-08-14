@@ -13,10 +13,10 @@ type APIHandlers struct {
 	Service service.Service
 }
 
-type updateParams struct {
-	Task   string
-	Status string
-}
+// type updateParams struct {
+// 	Task   string
+// 	Status string
+// }
 
 // --- helpers ---
 
@@ -63,21 +63,20 @@ func (h APIHandlers) FindByIdHandler(writer http.ResponseWriter, request *http.R
 }
 
 func (h APIHandlers) CreateHandler(writer http.ResponseWriter, request *http.Request) {
-
-	var options map[string]string
-
+	
+	var options service.TodoCreateParams // use service struct for now
 	if err := json.NewDecoder(request.Body).Decode(&options); err != nil {
 		jsonResponse(writer, map[string]string{"error": "failed to decode request"}, http.StatusBadRequest)
 		return
 	}
-
-	task, ok := options["task"]
-	if !ok {
+	
+	if options.Task == "" {
 		jsonResponse(writer, map[string]string{"error": "missing task"}, http.StatusBadRequest)
 		return
 	}
+	// TODO: Check userid
 
-	item, err := h.Service.CreateItem(task)
+	item, err := h.Service.CreateItem(options)
 	if err != nil {
 		jsonResponse(writer, map[string]string{"error": err.Error()}, http.StatusBadRequest)
 		return
@@ -96,7 +95,7 @@ func (h APIHandlers) UpdateHandler(writer http.ResponseWriter, request *http.Req
 		return
 	}
 
-	var options updateParams
+	var options service.TodoUpdateParams // use service struct for now
 	if err := json.NewDecoder(request.Body).Decode(&options); err != nil {
 		jsonResponse(writer, map[string]string{"error": err.Error()}, http.StatusBadRequest)
 		return
@@ -107,7 +106,7 @@ func (h APIHandlers) UpdateHandler(writer http.ResponseWriter, request *http.Req
 		return
 	}
 
-	item, err := h.Service.UpdateItem(id, options.Task, options.Status)
+	item, err := h.Service.UpdateItem(id, options)
 	if err != nil {
 		// Assume it's a 404 for now
 		jsonResponse(writer, map[string]string{"error": err.Error()}, http.StatusNotFound)

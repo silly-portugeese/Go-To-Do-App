@@ -108,8 +108,8 @@ func (tds *todoStore) executeFindById(cmd command) {
 
 func (tds *todoStore) executeCreate(cmd command) {
 
-	params, hasParams := cmd.args["params"].(models.TodoCreateParams)
-	
+	params, hasParams := cmd.args["params"].(models.TodoCreateData)
+
 	if !hasParams {
 		cmd.reply <- response{item: models.ToDo{}, err: errors.New("missing arguments")}
 		return
@@ -122,9 +122,9 @@ func (tds *todoStore) executeCreate(cmd command) {
 }
 
 func (tds *todoStore) executeUpdate(cmd command) {
-	
+
 	id, hasId := cmd.args["id"].(int)
-	params, hasParams := cmd.args["params"].(models.TodoUpdateParams)
+	params, hasParams := cmd.args["params"].(models.TodoUpdateData)
 
 	if !hasId {
 		cmd.reply <- response{item: models.ToDo{}, err: fmt.Errorf("missing id: %d", id)}
@@ -150,7 +150,7 @@ func (tds *todoStore) executeUpdate(cmd command) {
 	if params.Status != nil {
 		tds.items[index].Status = *params.Status
 	}
-	
+
 	cmd.reply <- response{item: tds.items[index], err: nil}
 }
 
@@ -194,14 +194,14 @@ func (tds todoStore) FindById(id int) (models.ToDo, error) {
 	return response.item, response.err
 }
 
-func (tds todoStore) Create(params models.TodoCreateParams) models.ToDo {
+func (tds todoStore) Create(params models.TodoCreateData) models.ToDo {
 	ch := make(chan response)
-	tds.cmds <- command{action: "create", reply: ch, args: map[string]interface{}{"params":  params}}
+	tds.cmds <- command{action: "create", reply: ch, args: map[string]interface{}{"params": params}}
 	response := <-ch
 	return response.item
 }
 
-func (tds todoStore) Update(id int, params models.TodoUpdateParams) (models.ToDo, error) {
+func (tds todoStore) Update(id int, params models.TodoUpdateData) (models.ToDo, error) {
 	ch := make(chan response)
 	tds.cmds <- command{action: "update", reply: ch, args: map[string]interface{}{"id": id, "params": params}}
 	response := <-ch

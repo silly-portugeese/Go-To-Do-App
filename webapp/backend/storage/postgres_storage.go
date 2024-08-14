@@ -6,10 +6,10 @@ import (
 	"log"
 	"strings"
 	"todo-webapp/backend/models"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
-
 
 type postgresStore struct {
 	dbpool *pgxpool.Pool
@@ -41,7 +41,7 @@ func (pgs postgresStore) Close() {
 // Each one sends a task to the RequestManager so the request can be processed
 
 func (pgs postgresStore) FindAll() []models.ToDo {
-	
+
 	query := "SELECT id, task, status, user_id FROM todos"
 	rows, err := pgs.dbpool.Query(context.Background(), query)
 
@@ -77,7 +77,7 @@ func (pgs postgresStore) FindById(id int) (models.ToDo, error) {
 	return item, nil
 }
 
-func (pgs postgresStore) Create(params models.TodoCreateParams) models.ToDo {
+func (pgs postgresStore) Create(params models.TodoCreateData) models.ToDo {
 
 	var item models.ToDo
 	// TODO: validation
@@ -95,7 +95,7 @@ func (pgs postgresStore) Create(params models.TodoCreateParams) models.ToDo {
 	return item
 }
 
-func (pgs postgresStore) Update(id int, params models.TodoUpdateParams) (models.ToDo, error) {
+func (pgs postgresStore) Update(id int, params models.TodoUpdateData) (models.ToDo, error) {
 
 	var setClauses []string
 	args := pgx.NamedArgs{"id": id}
